@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b101b" />
+  <meta name="description" content="Fortnite Collection Hub — un gestionnaire non officiel pour organiser sa collection de cosmétiques et d'armes Fortnite." />
+  <title>Fortnite Collection Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b101b;
+      --bg-2: #101827;
+      --panel: #151f30;
+      --panel-2: #1b293d;
+      --panel-3: #223149;
+      --line: #304057;
+      --line-soft: rgba(145, 165, 196, .16);
+      --text: #f5f7fb;
+      --muted: #9aa9bd;
+      --yellow: #ffe600;
+      --yellow-dim: #d6c000;
+      --green: #62dc91;
+      --red: #ff6475;
+      --blue: #55b8ff;
+      --font-display: 'Anton', Impact, sans-serif;
+      --font-condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-body: Inter, system-ui, sans-serif;
+      --radius: 3px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; min-height: 100vh; color: var(--text); background: var(--bg); font-family: var(--font-body); }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .topline { height: 4px; background: var(--yellow); }
+    .site-header { position: sticky; top: 0; z-index: 30; background: rgba(11,16,27,.97); border-bottom: 1px solid var(--line); }
+    .header-inner { max-width: 1480px; margin: auto; min-height: 78px; padding: 12px 28px; display: flex; align-items: center; gap: 22px; }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 238px; }
+    .brand-mark { width: 44px; height: 44px; display: grid; place-items: center; background: var(--yellow); color: #111722; font: 30px/1 var(--font-display); clip-path: polygon(0 0,100% 0,88% 100%,12% 100%); transform: skew(-4deg); }
+    .brand-copy { line-height: 1; }
+    .brand-name { font: 23px/1 var(--font-display); letter-spacing: .3px; text-transform: uppercase; }
+    .brand-sub { color: var(--yellow); font: 700 10px/1.6 var(--font-condensed); letter-spacing: 2px; text-transform: uppercase; }
+    .header-search { flex: 1; max-width: 510px; position: relative; }
+    .header-search input { width: 100%; height: 44px; color: var(--text); background: #141e2d; border: 1px solid #37465d; border-radius: 2px; padding: 0 46px 0 15px; outline: none; transition: border .15s, background .15s; }
+    .header-search input:focus { border-color: var(--yellow); background: #182336; }
+    .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--yellow); font-size: 19px; pointer-events: none; }
+    .header-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 16px; border: 1px solid transparent; border-radius: 2px; font: 800 13px/1 var(--font-condensed); letter-spacing: .7px; text-transform: uppercase; transition: transform .15s, background .15s, border-color .15s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { color: #111722; background: var(--yellow); border-color: var(--yellow); }
+    .btn-primary:hover { background: #fff15c; }
+    .btn-outline { color: var(--text); background: transparent; border-color: #41516a; }
+    .btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
+    .btn-danger { color: #fff; background: #9f2939; border-color: #c43d50; }
+    .btn-small { min-height: 32px; padding: 0 10px; font-size: 12px; }
+    .quick-links { background: #0e1624; border-bottom: 1px solid var(--line-soft); }
+    .quick-inner { max-width: 1480px; margin: auto; min-height: 40px; padding: 0 28px; display: flex; align-items: center; gap: 25px; }
+    .quick-label { margin-right: 2px; color: #6f8199; font: 700 11px var(--font-condensed); letter-spacing: 1.7px; text-transform: uppercase; }
+    .quick-link { color: #bdc8d7; font: 700 12px var(--font-condensed); letter-spacing: .6px; text-transform: uppercase; }
+    .quick-link:hover { color: var(--yellow); }
+    .quick-link::after { content: ' ↗'; color: var(--yellow); }
+    main { max-width: 1480px; margin: 0 auto; padding: 30px 28px 70px; }
+    .hero { position: relative; min-height: 178px; overflow: hidden; padding: 27px 32px; border: 1px solid #38475c; background: linear-gradient(110deg,#1d2e48 0%,#15243a 45%,#111b2c 100%); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .hero::before { content: 'FN'; position: absolute; right: 5%; top: -64px; color: rgba(255,230,0,.065); font: 260px/.95 var(--font-display); transform: skew(-8deg); pointer-events: none; }
+    .hero-copy { position: relative; z-index: 1; max-width: 690px; }
+    .eyebrow { color: var(--yellow); font: 800 12px var(--font-condensed); letter-spacing: 2.3px; text-transform: uppercase; }
+    .hero h1 { margin: 6px 0 8px; font: 44px/.98 var(--font-display); letter-spacing: .4px; text-transform: uppercase; }
+    .hero p { max-width: 650px; margin: 0; color: #b8c5d7; font-size: 13px; line-height: 1.65; }
+    .hero-stats { position: relative; z-index: 1; display: flex; gap: 10px; }
+    .stat-box { min-width: 108px; padding: 13px 15px 11px; background: rgba(6,11,19,.35); border: 1px solid #43546c; text-align: center; }
+    .stat-num { color: var(--yellow); font: 30px/.95 var(--font-display); }
+    .stat-label { margin-top: 7px; color: #9eafc4; font: 700 10px var(--font-condensed); letter-spacing: 1.1px; text-transform: uppercase; }
+    .collection-strip { margin: 18px 0 25px; padding: 15px 18px; border: 1px solid var(--line); background: #111b2b; display: grid; grid-template-columns: minmax(180px, 1.1fr) minmax(240px, 2fr) auto; align-items: center; gap: 20px; }
+    .progress-title { font: 21px/1 var(--font-display); text-transform: uppercase; }
+    .progress-caption { margin-top: 5px; color: var(--muted); font-size: 11px; }
+    .progress-track { height: 9px; background: #26354b; border: 1px solid #3a4b64; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; background: var(--yellow); transition: width .3s ease; }
+    .progress-numbers { color: var(--yellow); font: 700 16px var(--font-condensed); text-align: right; white-space: nowrap; }
+    .toolbar { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin-bottom: 13px; }
+    .section-kicker { color: var(--yellow); font: 800 11px var(--font-condensed); letter-spacing: 2px; text-transform: uppercase; }
+    .section-heading { margin: 4px 0 0; font: 32px/1 var(--font-display); text-transform: uppercase; }
+    .toolbar-right { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .select { height: 38px; padding: 0 34px 0 11px; color: #dbe3ee; background: #172236; border: 1px solid #3b4c64; border-radius: 2px; outline: none; }
+    .select:focus { border-color: var(--yellow); }
+    .tabs { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 1px; border-bottom: 1px solid #3c4a5e; scrollbar-width: thin; }
+    .tab { position: relative; flex: 0 0 auto; min-height: 50px; padding: 0 19px; color: #9eacc0; background: #111a29; border: 1px solid #2c3a50; border-bottom: 0; font: 800 15px var(--font-condensed); letter-spacing: .6px; text-transform: uppercase; }
+    .tab:hover { color: #fff; background: #19263a; }
+    .tab.active { color: #111722; background: var(--yellow); border-color: var(--yellow); }
+    .tab-count { display: inline-grid; place-items: center; min-width: 19px; height: 19px; margin-left: 7px; padding: 0 4px; border-radius: 2px; color: #d4deeb; background: #33435a; font: 700 10px var(--font-body); }
+    .tab.active .tab-count { color: #fff; background: #1b2637; }
+    .filter-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 13px 0 16px; }
+    .filter-caption { margin-right: 5px; color: #74869e; font: 700 11px var(--font-condensed); letter-spacing: 1.3px; text-transform: uppercase; }
+    .filter-chip { padding: 7px 11px; color: #aab7c9; background: #141e2d; border: 1px solid #34445a; border-radius: 2px; font: 700 12px var(--font-condensed); text-transform: uppercase; transition: all .12s; }
+    .filter-chip:hover { color: #fff; border-color: #71819a; }
+    .filter-chip.active { color: #101722; background: var(--yellow); border-color: var(--yellow); }
+    .catalog-meta { display: flex; justify-content: space-between; align-items: center; min-height: 34px; margin-bottom: 9px; color: #8798af; font-size: 11px; }
+    .catalog-meta strong { color: #e8edf5; }
+    .source-status { display: inline-flex; align-items: center; gap: 6px; }
+    .source-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; }
+    .source-dot.offline { background: #e6ad43; }
+    .item-grid { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 13px; }
+    .item-card { min-width: 0; position: relative; background: #172337; border: 1px solid #2d3d54; border-bottom: 3px solid var(--rarity,#52647d); transition: transform .15s, border-color .15s, background .15s; cursor: pointer; overflow: hidden; }
+    .item-card:hover { transform: translateY(-3px); background: #1c2a40; border-color: #6d7f98; }
+    .item-card.owned { outline: 1px solid rgba(255,230,0,.5); outline-offset: -1px; }
+    .item-art { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: linear-gradient(140deg, #344b67, #1d2b40 60%, #121d2d); }
+    .item-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg,transparent 54%,rgba(8,13,22,.42)); pointer-events: none; }
+    .item-art img { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .item-art .art-placeholder { width: 100%; height: 100%; display: grid; place-items: center; color: rgba(255,255,255,.9); font: 60px/.9 var(--font-display); text-shadow: 0 3px 20px rgba(0,0,0,.3); }
+    .rarity-tag { position: absolute; top: 8px; left: 8px; z-index: 2; padding: 5px 7px 4px; color: #111722; background: var(--rarity,#8191a5); font: 900 10px/1 var(--font-condensed); letter-spacing: .6px; text-transform: uppercase; max-width: calc(100% - 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .owned-mark { position: absolute; top: 8px; right: 8px; z-index: 3; width: 27px; height: 27px; display: grid; place-items: center; color: #101722; background: var(--yellow); font-size: 15px; font-weight: 900; border: 1px solid rgba(0,0,0,.35); }
+    .custom-tag { position: absolute; bottom: 8px; left: 8px; z-index: 3; padding: 4px 6px; color: #111722; background: #8ce6bd; font: 900 10px var(--font-condensed); letter-spacing: .8px; }
+    .demo-tag { position: absolute; bottom: 8px; left: 8px; z-index: 3; padding: 4px 6px; color: #111722; background: #d2a7ff; font: 900 10px var(--font-condensed); letter-spacing: .8px; }
+    .item-info { min-height: 84px; padding: 10px 10px 9px; }
+    .item-type { color: #8ea0b6; font: 700 10px var(--font-condensed); letter-spacing: 1.2px; text-transform: uppercase; }
+    .item-name { margin-top: 5px; color: #f1f4f8; font: 700 16px/1.12 var(--font-condensed); text-transform: uppercase; overflow-wrap: anywhere; }
+    .item-foot { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-top: 9px; }
+    .item-series { overflow: hidden; color: #8ea0b6; font: 700 10px var(--font-condensed); text-transform: uppercase; text-overflow: ellipsis; white-space: nowrap; }
+    .card-check { width: 28px; height: 25px; flex: 0 0 auto; color: #a7b5c6; background: #23334a; border: 1px solid #445770; font-size: 13px; }
+    .card-check:hover { color: var(--yellow); border-color: var(--yellow); }
+    .item-card.owned .card-check { color: #111722; background: var(--yellow); border-color: var(--yellow); }
+    .weapon-card .item-art { aspect-ratio: 1.25 / 1; }
+    .weapon-stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 5px; margin-top: 9px; }
+    .weapon-stat { padding: 5px 6px; background: #101a29; border: 1px solid #2d3e54; }
+    .weapon-stat b { display: block; color: var(--yellow); font: 700 15px var(--font-condensed); }
+    .weapon-stat span { color: #8496ad; font: 700 9px var(--font-condensed); letter-spacing: .6px; text-transform: uppercase; }
+    .weapon-fav { position: absolute; top: 8px; right: 8px; z-index: 4; width: 29px; height: 29px; color: #fff; background: rgba(10,16,27,.72); border: 1px solid rgba(255,255,255,.35); font-size: 16px; }
+    .weapon-fav.active { color: #111722; background: var(--yellow); border-color: var(--yellow); }
+    .empty-state { padding: 55px 20px; text-align: center; border: 1px dashed #3c4d65; background: #111a29; }
+    .empty-symbol { color: var(--yellow); font: 54px/1 var(--font-display); }
+    .empty-state h3 { margin: 12px 0 6px; font: 27px var(--font-display); text-transform: uppercase; }
+    .empty-state p { max-width: 490px; margin: 0 auto 17px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 7px; margin: 25px 0 5px; }
+    .page-btn { min-width: 37px; height: 36px; padding: 0 10px; color: #c5d0de; background: #172337; border: 1px solid #394b64; font: 800 13px var(--font-condensed); }
+    .page-btn.active { color: #111722; background: var(--yellow); border-color: var(--yellow); }
+    .page-btn:disabled { opacity: .35; cursor: default; }
+    .footer { margin-top: 58px; padding: 19px 0 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--line); color: #71839a; font-size: 10px; line-height: 1.7; }
+    .footer strong { color: #b6c2d2; }
+    .footer a { color: var(--yellow); text-decoration: underline; text-underline-offset: 3px; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(3,7,13,.82); }
+    .modal-backdrop.show { display: flex; }
+    .modal { width: min(740px,100%); max-height: min(90vh,900px); overflow: auto; background: #121d2d; border: 1px solid #53657e; border-top: 4px solid var(--yellow); box-shadow: 0 20px 80px rgba(0,0,0,.5); }
+    .modal-head { position: sticky; top: 0; z-index: 4; display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 15px 19px; background: #121d2d; border-bottom: 1px solid #34445b; }
+    .modal-title { margin: 0; font: 27px/1 var(--font-display); text-transform: uppercase; }
+    .close-btn { width: 35px; height: 35px; color: #dfe6ef; background: #26354a; border: 1px solid #495c74; font-size: 20px; }
+    .modal-body { padding: 20px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .field.full { grid-column: 1/-1; }
+    .field label { color: #a8b6c8; font: 800 11px var(--font-condensed); letter-spacing: 1.1px; text-transform: uppercase; }
+    .field input, .field select, .field textarea { width: 100%; min-height: 42px; padding: 10px 11px; color: #f3f6fa; background: #0d1624; border: 1px solid #3b4d65; border-radius: 2px; outline: none; }
+    .field textarea { min-height: 85px; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--yellow); }
+    .field input::placeholder, .field textarea::placeholder { color: #687b93; }
+    .field-hint { color: #8294aa; font-size: 10px; line-height: 1.5; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #34445b; }
+    .stat-fields { display: contents; }
+    .detail-layout { display: grid; grid-template-columns: minmax(190px,.82fr) minmax(0,1.18fr); gap: 20px; }
+    .detail-art { min-height: 250px; background: #1c2b40; border: 1px solid #40536d; display: grid; place-items: center; overflow: hidden; }
+    .detail-art img { width: 100%; height: 100%; max-height: 370px; object-fit: contain; }
+    .detail-art .art-placeholder { font: 80px var(--font-display); }
+    .detail-content h3 { margin: 0 0 8px; font: 31px/1 var(--font-display); text-transform: uppercase; }
+    .detail-description { color: #aab8c9; font-size: 12px; line-height: 1.65; }
+    .detail-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+    .detail-pill { padding: 5px 8px; color: #dce4ed; background: #26364c; border: 1px solid #3e516a; font: 700 10px var(--font-condensed); text-transform: uppercase; }
+    .detail-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 19px; }
+    .detail-stat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 7px; margin-top: 15px; }
+    .detail-stat { padding: 10px; background: #0d1725; border: 1px solid #2e4057; }
+    .detail-stat b { display: block; color: var(--yellow); font: 25px var(--font-display); }
+    .detail-stat span { color: #8193a9; font: 700 10px var(--font-condensed); text-transform: uppercase; }
+    .notice { margin: 12px 0; padding: 10px 12px; color: #c3d0df; background: #1b2a3f; border-left: 3px solid var(--yellow); font-size: 11px; line-height: 1.55; }
+    .toast-wrap { position: fixed; right: 20px; bottom: 20px; z-index: 200; display: grid; gap: 8px; }
+    .toast { min-width: 220px; max-width: 360px; padding: 12px 15px; color: #111722; background: var(--yellow); border-left: 4px solid #fff59a; box-shadow: 0 8px 26px rgba(0,0,0,.35); font: 800 13px var(--font-condensed); animation: toast-in .2s ease-out; }
+    .toast.error { color: #fff; background: #a52f43; border-color: #ff8d9a; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .collection-panel { margin: 13px 0 15px; padding: 17px; background: #111b2b; border: 1px solid var(--line); }
+    .collection-panel[hidden] { display: none !important; }
+    .collection-overview { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 9px; }
+    .collection-metric { min-width: 0; padding: 12px 13px; background: #172337; border: 1px solid #35465e; border-top: 3px solid var(--yellow); }
+    .collection-metric strong { display: block; color: var(--yellow); font: 30px/.95 var(--font-display); }
+    .collection-metric span { display: block; margin-top: 7px; color: #a9b8ca; font: 700 11px var(--font-condensed); letter-spacing: .7px; text-transform: uppercase; }
+    .collection-progress-row { display: grid; grid-template-columns: minmax(160px,1fr) minmax(150px,2fr) auto; align-items: center; gap: 13px; margin-top: 15px; }
+    .collection-progress-label { color: #cbd5e2; font: 700 12px var(--font-condensed); text-transform: uppercase; }
+    .collection-progress-value { color: var(--yellow); font: 700 13px var(--font-condensed); white-space: nowrap; }
+    .collection-rarities { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 13px; }
+    .collection-rarity { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; color: #dce4ee; background: #18263a; border: 1px solid #394b63; font: 700 10px var(--font-condensed); text-transform: uppercase; }
+    .collection-rarity i { width: 7px; height: 7px; display: inline-block; background: var(--rarity-color,#8fa1b7); }
+    .collection-tools { display: grid; grid-template-columns: minmax(200px,1.5fr) minmax(150px,.8fr) minmax(150px,.8fr); gap: 8px; margin-top: 15px; }
+    .collection-tools input, .collection-tools select { width: 100%; min-height: 40px; padding: 0 11px; color: #e9eef6; background: #0d1624; border: 1px solid #3b4d65; border-radius: 2px; outline: none; }
+    .collection-tools input:focus, .collection-tools select:focus { border-color: var(--yellow); }
+    .collection-tools input::placeholder { color: #7e90a8; }
+    .collection-hint { margin-top: 10px; color: #7f91a8; font-size: 10px; line-height: 1.5; }
+    .collection-section-title { margin: 0 0 10px; color: var(--yellow); font: 18px var(--font-display); text-transform: uppercase; }
+    @media (max-width: 920px) { .collection-overview { grid-template-columns: repeat(3,minmax(0,1fr)); } .collection-progress-row { grid-template-columns: 1fr; gap: 8px; } }
+    @media (max-width: 620px) { .collection-panel { padding: 12px; } .collection-overview { grid-template-columns: repeat(2,minmax(0,1fr)); } .collection-metric strong { font-size: 26px; } .collection-tools { grid-template-columns: 1fr; } }
+
+    /* Centre API Fortnite */
+    .api-hub { margin: 14px 0 20px; }
+    .api-hub[hidden] { display:none !important; }
+    .api-intro { padding: 22px 24px; border:1px solid #3b4d65; background:linear-gradient(110deg,#1c2c43,#121d2e); display:flex; align-items:center; justify-content:space-between; gap:18px; }
+    .api-intro h3 { margin:5px 0 6px; font:32px/1 var(--font-display); text-transform:uppercase; }
+    .api-intro p { max-width:760px; margin:0; color:#aebdd0; font-size:12px; line-height:1.6; }
+    .api-key-panel { margin:12px 0; padding:14px; border:1px solid #6b5c2a; background:#211f17; }
+    .api-key-row { display:grid; grid-template-columns:minmax(200px,1fr) auto auto; gap:8px; align-items:center; }
+    .api-key-row input { min-width:0; height:41px; padding:0 12px; color:#fff; background:#0d1624; border:1px solid #5a5237; outline:none; }
+    .api-key-row input:focus { border-color:var(--yellow); }
+    .api-key-note { margin-top:8px; color:#c0b58d; font-size:10px; line-height:1.5; }
+    .api-key-state { color:#d7c98f; font:700 11px var(--font-condensed); text-transform:uppercase; }
+    .api-nav { display:flex; gap:5px; overflow-x:auto; margin:14px 0 12px; padding-bottom:7px; border-bottom:1px solid #394a60; }
+    .api-nav button { flex:0 0 auto; min-height:39px; padding:0 13px; color:#aab8c9; background:#121d2c; border:1px solid #35465c; font:800 12px var(--font-condensed); text-transform:uppercase; letter-spacing:.5px; }
+    .api-nav button.active { color:#111722; background:var(--yellow); border-color:var(--yellow); }
+    .api-view { min-height:180px; }
+    .api-view-title { margin:0 0 10px; color:#fff; font:24px var(--font-display); text-transform:uppercase; }
+    .api-subtitle { margin:0 0 14px; color:#9eafc3; font-size:11px; line-height:1.6; }
+    .api-form { display:flex; flex-wrap:wrap; align-items:end; gap:9px; padding:13px; margin-bottom:13px; background:#111b2a; border:1px solid #34465d; }
+    .api-form .field { flex:1 1 170px; }
+    .api-form .field input, .api-form .field select { min-height:40px; }
+    .api-results { margin-top:14px; }
+    .api-loading,.api-error,.api-empty { padding:17px; color:#b9c7d8; background:#111b2a; border:1px solid #36485f; font-size:12px; line-height:1.6; }
+    .api-error { border-color:#9b3e4c; background:#291922; color:#ffb6bf; }
+    .api-metric-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:9px; margin:12px 0; }
+    .api-metric { padding:13px; background:#172337; border:1px solid #3a4b63; border-top:3px solid var(--yellow); }
+    .api-metric strong { display:block; color:var(--yellow); font:28px/.95 var(--font-display); overflow-wrap:anywhere; }
+    .api-metric span { display:block; margin-top:7px; color:#aab8ca; font:700 10px var(--font-condensed); text-transform:uppercase; letter-spacing:.7px; }
+    .api-mode-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:12px 0; }
+    .api-mode { padding:14px; background:#121e2f; border:1px solid #384a61; }
+    .api-mode h4 { margin:0 0 10px; color:var(--yellow); font:20px var(--font-display); text-transform:uppercase; }
+    .api-mode-stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .api-mode-stats div { padding:8px; background:#0d1624; }
+    .api-mode-stats b { display:block; color:#fff; font:20px var(--font-display); }
+    .api-mode-stats span { color:#8597ad; font:700 9px var(--font-condensed); text-transform:uppercase; }
+    .api-card-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:11px; }
+    .api-card { min-width:0; background:#172337; border:1px solid #34465d; border-bottom:3px solid var(--yellow); overflow:hidden; }
+    .api-card img { display:block; width:100%; aspect-ratio:16/10; object-fit:cover; background:#0d1624; }
+    .api-card-body { padding:10px; }
+    .api-card h4 { margin:0 0 5px; color:#fff; font:18px/1.1 var(--font-condensed); text-transform:uppercase; }
+    .api-card p { margin:0; color:#a5b4c7; font-size:10px; line-height:1.55; }
+    .api-card-meta { margin-top:8px; color:var(--yellow); font:700 10px var(--font-condensed); text-transform:uppercase; }
+    .api-map-image { width:100%; display:block; border:1px solid #435570; background:#111b2b; }
+    .api-poi-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+    .api-poi { padding:6px 9px; color:#dbe4ef; background:#1b2a40; border:1px solid #3b4d65; font:700 10px var(--font-condensed); }
+    .api-profile-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; padding:12px; background:#172337; border:1px solid #364960; }
+    .api-profile-avatar { width:54px; height:54px; object-fit:cover; background:#26364c; border:1px solid #485c73; }
+    .api-profile-head strong { display:block; color:#fff; font:23px var(--font-display); text-transform:uppercase; }
+    .api-profile-head span { color:#a9b8ca; font-size:10px; }
+    .api-link { color:var(--yellow); text-decoration:underline; }
+    @media(max-width:950px){.api-card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.api-metric-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:620px){.api-intro{padding:17px;align-items:flex-start;flex-direction:column}.api-intro h3{font-size:27px}.api-key-row{grid-template-columns:1fr 1fr}.api-key-row input{grid-column:1/-1}.api-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.api-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.api-mode-grid{grid-template-columns:1fr}.api-form .field{flex-basis:100%}}
+
+
+    /* Studio d'apparence : thèmes Fortnite OG, Vice City, Neon et Stealth */
+    .btn-design { border-color:#53647b; min-width:112px; }
+    .btn-design span { color:var(--yellow); font-size:17px; }
+    .design-modal { width:min(900px,100%); max-height:min(92vh,920px); }
+    .design-modal .modal-head { align-items:center; }
+    .design-modal .modal-title { margin:3px 0 0; }
+    .design-body { max-height:calc(92vh - 75px); overflow:auto; }
+    .design-intro { display:flex; align-items:center; gap:13px; padding:14px; margin-bottom:19px; border:1px solid var(--line); background:linear-gradient(110deg,var(--panel-2),var(--panel)); }
+    .design-intro-mark { width:42px; height:42px; flex:0 0 42px; display:grid; place-items:center; color:#111722; background:var(--yellow); font-size:23px; font-weight:900; }
+    .design-intro strong { font:20px var(--font-display); text-transform:uppercase; }
+    .design-intro p { margin:4px 0 0; color:var(--muted); font-size:11px; line-height:1.6; }
+    .design-block { min-width:0; padding:15px; border:1px solid var(--line); background:var(--bg-2); }
+    .design-block-heading { display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:13px; }
+    .design-block-heading h3 { margin:3px 0 0; font:23px/1 var(--font-display); text-transform:uppercase; }
+    .design-current { padding:5px 8px; color:var(--yellow); border:1px solid var(--line); font:700 10px var(--font-condensed); letter-spacing:.8px; }
+    .theme-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+    .theme-card { position:relative; min-width:0; padding:7px; text-align:left; color:var(--text); background:var(--panel); border:1px solid var(--line); transition:border-color .15s,transform .15s,background .15s; }
+    .theme-card:hover { border-color:var(--yellow); transform:translateY(-2px); }
+    .theme-card.selected { border:2px solid var(--yellow); padding:6px; background:var(--panel-2); }
+    .theme-preview { position:relative; display:flex; align-items:end; gap:5px; height:66px; padding:9px; overflow:hidden; }
+    .theme-preview::before { position:absolute; inset:0; content:""; opacity:.9; }
+    .theme-preview i { position:relative; z-index:1; display:block; height:24px; flex:1; border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.2); }
+    .theme-preview i:nth-child(2) { height:37px; }
+    .theme-preview i:nth-child(3) { height:17px; }
+    .preview-fortnite::before { background:linear-gradient(135deg,#0b101b 5%,#203c5d 100%); }
+    .preview-fortnite i:first-child { background:#ffe600; }
+    .preview-og::before { background:linear-gradient(135deg,#2c9fc7,#1d704f); }
+    .preview-og i:first-child { background:#f8dc54; }
+    .preview-og i:nth-child(2) { background:#81c8e5; }
+    .preview-gta::before { background:linear-gradient(135deg,#1a1c42 0%,#e64f92 52%,#f1a45a 100%); }
+    .preview-gta i:first-child { background:#4ce4db; }
+    .preview-gta i:nth-child(2) { background:#ff6eaa; }
+    .preview-neon::before { background:linear-gradient(135deg,#130e32,#4232a5); }
+    .preview-neon i:first-child { background:#bd70ff; }
+    .preview-neon i:nth-child(2) { background:#4de7f4; }
+    .preview-stealth::before { background:linear-gradient(135deg,#090d12,#31202a); }
+    .preview-stealth i:first-child { background:#ff514f; }
+    .preview-custom::before { background:linear-gradient(135deg,#101827,#3c526f 48%,#ffe600); }
+    .theme-card-copy { display:block; padding:8px 3px 3px; }
+    .theme-card-copy b { display:block; font:800 13px var(--font-condensed); letter-spacing:.5px; }
+    .theme-card-copy small { display:block; margin-top:3px; color:var(--muted); font-size:9px; line-height:1.35; }
+    .theme-check { position:absolute; top:11px; right:11px; display:none; width:20px; height:20px; place-items:center; color:#111722; background:var(--yellow); font-size:12px; font-weight:900; }
+    .theme-card.selected .theme-check { display:grid; }
+    .design-controls-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-top:11px; }
+    .design-color-row { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:55px; border-top:1px solid var(--line-soft); }
+    .design-color-row span,.design-field { min-width:0; }
+    .design-color-row b { display:block; font:700 13px var(--font-condensed); }
+    .design-color-row small { display:block; margin-top:2px; color:var(--muted); font-size:9px; }
+    .design-color-row input[type=color] { width:42px; height:32px; padding:2px; border:1px solid var(--line); background:var(--panel); cursor:pointer; }
+    .design-field { display:grid; gap:6px; margin-top:11px; color:var(--muted); font:700 11px var(--font-condensed); text-transform:uppercase; }
+    .design-field select { width:100%; min-height:38px; padding:0 10px; color:var(--text); background:var(--panel); border:1px solid var(--line); outline:none; }
+    .design-field select:focus { border-color:var(--yellow); }
+    .design-footer { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:13px; }
+    .design-status { color:var(--green); font-size:10px; }
+    body[data-theme="og"] { background-image:linear-gradient(180deg,rgba(38,129,163,.14),transparent 38%),radial-gradient(ellipse at 85% 0%,rgba(81,177,129,.11),transparent 38%); background-attachment:fixed; }
+    body[data-theme="og"] .site-header { background:rgba(7,26,43,.96); }
+    body[data-theme="og"] .hero { background:linear-gradient(110deg,#1f718f 0%,#246b5e 48%,#102a3d 100%); border-color:#4e9b94; }
+    body[data-theme="og"] .hero::before { content:'OG'; color:rgba(255,231,90,.13); }
+    body[data-theme="og"] .quick-links,body[data-theme="og"] .tab:not(.active) { background:#102b40; }
+    body[data-theme="og"] .item-card { border-color:#477b83; }
+    body[data-theme="og"] .item-card:hover { border-color:var(--yellow); }
+    body[data-theme="gta6"] { background-image:radial-gradient(ellipse at 12% 0%,rgba(255,83,159,.16),transparent 34%),radial-gradient(ellipse at 90% 12%,rgba(57,227,221,.12),transparent 33%); background-attachment:fixed; }
+    body[data-theme="gta6"] .site-header { background:rgba(17,13,32,.96); }
+    body[data-theme="gta6"] .topline { height:5px; background:linear-gradient(90deg,#4de5dd,#ff5caa,#f6b05d); }
+    body[data-theme="gta6"] .hero { background:linear-gradient(112deg,#171735 0%,#592b62 43%,#d34d83 72%,#d88c62 100%); border-color:#b85e9c; }
+    body[data-theme="gta6"] .hero::before { content:'VICE'; right:2%; color:rgba(255,255,255,.12); font-size:190px; }
+    body[data-theme="gta6"] .hero .eyebrow,body[data-theme="gta6"] .section-kicker { color:#59e8e2; }
+    body[data-theme="gta6"] .quick-links { background:#17122b; border-color:#57395f; }
+    body[data-theme="gta6"] .item-card { border-color:#62405e; }
+    body[data-theme="gta6"] .item-card:hover { border-color:#54e9e1; box-shadow:0 8px 24px rgba(255,83,159,.16); }
+    body[data-theme="gta6"] .tab.active,body[data-theme="gta6"] .btn-primary { color:#160e28; }
+    body[data-theme="neon"] { background-image:radial-gradient(ellipse at 15% 0%,rgba(169,91,255,.17),transparent 35%),radial-gradient(ellipse at 90% 25%,rgba(54,225,245,.12),transparent 35%); background-attachment:fixed; }
+    body[data-theme="neon"] .hero { background:linear-gradient(110deg,#1d164b,#342b79 58%,#126078); border-color:#6558b8; }
+    body[data-theme="neon"] .hero::before { content:'PLAY'; color:rgba(190,126,255,.12); font-size:185px; }
+    body[data-theme="neon"] .item-card:hover { box-shadow:0 8px 25px rgba(83,224,245,.15); }
+    body[data-theme="stealth"] .hero { background:linear-gradient(110deg,#11151b,#29212a 58%,#3b202a); border-color:#6b3844; }
+    body[data-theme="stealth"] .hero::before { content:'OPS'; color:rgba(255,75,78,.11); }
+    body[data-theme="stealth"] .quick-links { background:#101318; }
+    body[data-theme="stealth"] .item-card { border-color:#473640; }
+    body[data-atmosphere="grid"] { background-image:linear-gradient(rgba(116,151,187,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(116,151,187,.055) 1px,transparent 1px); background-size:28px 28px; background-attachment:fixed; }
+    body[data-atmosphere="sunset"] { background-image:linear-gradient(145deg,rgba(255,91,157,.13),transparent 42%),linear-gradient(25deg,rgba(61,211,214,.1),transparent 55%); background-attachment:fixed; }
+    body[data-atmosphere="scanlines"] { background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 4px); background-attachment:fixed; }
+    body[data-density="compact"] .item-grid { gap:7px; grid-template-columns:repeat(auto-fill,minmax(145px,1fr)); }
+    body[data-density="compact"] .item-art { aspect-ratio:1/.92; }
+    body[data-density="compact"] .item-info { min-height:68px; padding:8px; }
+    body[data-density="wide"] .item-grid { grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
+    body[data-density="wide"] .item-art { aspect-ratio:1/1.12; }
+    body[data-density="wide"] .item-info { min-height:100px; padding:14px; }
+    @media(max-width:700px){.theme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.design-controls-grid{grid-template-columns:1fr}.design-modal{max-height:95vh}.design-body{max-height:calc(95vh - 70px)}.design-footer{align-items:flex-start;flex-direction:column}.btn-design{min-width:0;padding:0 9px}.btn-design span{display:none}}
+
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 1180px) { .item-grid { grid-template-columns: repeat(5,minmax(0,1fr)); } .header-inner { gap: 14px; } .brand { min-width: 215px; } }
+    @media (max-width: 920px) { .header-inner { flex-wrap: wrap; padding: 12px 18px; } .brand { min-width: 0; } .header-search { order: 3; flex-basis: 100%; max-width: none; } .header-actions { margin-left: auto; } .quick-inner { padding: 0 18px; overflow-x: auto; } main { padding: 22px 18px 55px; } .hero { align-items: flex-start; flex-direction: column; } .hero-stats { width: 100%; } .stat-box { flex: 1; } .collection-strip { grid-template-columns: 1fr; gap: 11px; } .progress-numbers { text-align: left; } .item-grid { grid-template-columns: repeat(4,minmax(0,1fr)); } }
+    @media (max-width: 620px) { .header-inner { padding: 11px 13px; } .brand-mark { width: 37px; height: 37px; font-size: 25px; } .brand-name { font-size: 20px; } .btn-create { min-height: 38px; padding: 0 10px; font-size: 11px; } .quick-inner { padding: 0 13px; gap: 18px; } main { padding: 17px 13px 42px; } .hero { min-height: 0; padding: 22px 19px; } .hero h1 { font-size: 36px; } .hero p { font-size: 12px; } .hero-stats { gap: 6px; } .stat-box { min-width: 0; padding: 10px 5px; } .stat-num { font-size: 24px; } .stat-label { font-size: 9px; letter-spacing: .5px; } .toolbar { align-items: flex-start; flex-direction: column; } .section-heading { font-size: 29px; } .tabs { margin-right: -13px; } .tab { min-height: 45px; padding: 0 13px; font-size: 13px; } .filter-panel { padding: 11px 0; } .item-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; } .item-info { min-height: 78px; padding: 8px; } .item-name { font-size: 15px; } .item-card:hover { transform: none; } .catalog-meta { gap: 8px; align-items: flex-start; flex-direction: column; padding: 5px 0; } .form-grid, .detail-layout { grid-template-columns: 1fr; } .detail-art { min-height: 210px; max-height: 290px; } .modal-backdrop { padding: 8px; } .modal-body { padding: 14px; } .footer { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <div class="topline"></div>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="Fortnite Collection Hub, accueil">
+        <div class="brand-mark">F</div>
+        <div class="brand-copy"><div class="brand-name">FORTNITE</div><div class="brand-sub">COLLECTION HUB</div></div>
+      </a>
+      <div class="header-search">
+        <label class="sr-only" for="globalSearch">Rechercher dans le catalogue</label>
+        <input id="globalSearch" type="search" placeholder="RECHERCHER UN SKIN, UN ACCESSOIRE, UNE ARME..." autocomplete="off" />
+        <span class="search-icon">⌕</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-design" id="openDesign" type="button" aria-haspopup="dialog" aria-controls="designModal"><span aria-hidden="true">✦</span> APPARENCE</button>
+        <button class="btn btn-primary btn-create" id="openCreate">＋ CRÉER UN ÉLÉMENT</button>
+      </div>
+    </div>
+  </header>
+  <nav class="quick-links" aria-label="Liens officiels">
+    <div class="quick-inner">
+      <span class="quick-label">Jouer à Fortnite</span>
+      <a class="quick-link" href="https://www.fortnite.com/item-shop" target="_blank" rel="noopener">Boutique du jour</a>
+      <a class="quick-link" href="https://www.xbox.com/fr-FR/play/games/fortnite/BT5P2X999VH2" target="_blank" rel="noopener">Xbox Cloud Gaming</a>
+      <a class="quick-link" href="https://www.nvidia.com/fr-fr/geforce-now/fortnite-mobile/" target="_blank" rel="noopener">NVIDIA GeForce NOW</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">Ton casier. Tes règles.</div>
+        <h1>Ta collection<br />Fortnite au complet.</h1>
+        <p>Retrouve tes tenues, compagnons, équipements et armes. Coche ce que tu possèdes, ajoute tes propres éléments et garde ta collection organisée sur cet appareil.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-box"><div class="stat-num" id="heroOwned">0</div><div class="stat-label">Éléments possédés</div></div>
+        <div class="stat-box"><div class="stat-num" id="heroTotal">0</div><div class="stat-label">À collectionner</div></div>
+        <div class="stat-box"><div class="stat-num" id="heroCustom">0</div><div class="stat-label">Créations perso</div></div>
+      </div>
+    </section>
+
+    <section class="collection-strip" aria-label="Progression de collection">
+      <div><div class="progress-title">Progression du casier</div><div class="progress-caption">Tes éléments possédés / les éléments suivis</div></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-numbers" id="progressText">0 / 0 · 0 %</div>
+    </section>
+
+    <div class="toolbar">
+      <div><div class="section-kicker">Catalogue communautaire</div><h2 class="section-heading" id="activeHeading">Skins</h2></div>
+      <div class="toolbar-right">
+        <button class="btn btn-outline btn-small" id="exportBtn">↓ EXPORTER JSON</button>
+        <button class="btn btn-outline btn-small" id="importBtn">↑ IMPORTER JSON</button>
+        <input class="sr-only" type="file" id="importFile" accept="application/json,.json" />
+      </div>
+    </div>
+
+    <nav class="tabs" id="mainTabs" aria-label="Catégories du catalogue">
+      <button class="tab active" data-tab="skins">Skins <span class="tab-count" id="count-skins">0</span></button>
+      <button class="tab" data-tab="companions">Esprits &amp; Compagnons <span class="tab-count" id="count-companions">0</span></button>
+      <button class="tab" data-tab="equipment">Sacs à dos, Planeurs &amp; Équipements <span class="tab-count" id="count-equipment">0</span></button>
+      <button class="tab" data-tab="weapons">Arsenal Armes <span class="tab-count" id="count-weapons">0</span></button>
+      <button class="tab" data-tab="collection">Ma collection <span class="tab-count" id="count-collection">0</span></button>
+      <button class="tab" data-tab="creations">Mes créations <span class="tab-count" id="count-creations">0</span></button>
+      <button class="tab" data-tab="api">API Fortnite <span class="tab-count">LIVE</span></button>
+    </nav>
+
+    <div class="filter-panel" id="filterPanel"></div>
+    <section class="collection-panel" id="collectionPanel" hidden aria-label="Résumé de ma collection"></section>
+    <section class="api-hub" id="apiHub" hidden aria-label="Centre de données Fortnite">
+      <div class="api-intro"><div><div class="section-kicker">FORTNITE DATA CENTER · API PUBLIQUE</div><h3>Toutes les données du jeu</h3><p>Consulte les statistiques publiques des joueurs, la boutique du jour, les actualités, la carte, les playlists, les codes créateur et les bannières. Les données publiques ne nécessitent pas de clé ; les statistiques de joueur nécessitent une clé API Fortnite-API.</p></div><div class="stat-box"><div class="stat-num">API</div><div class="stat-label">Données en direct</div></div></div>
+      <div class="api-key-panel"><div class="api-key-row"><input id="apiKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Optionnel : saisir une autre clé pour remplacer celle intégrée" aria-label="Clé API Fortnite-API"/><button class="btn btn-primary" id="apiKeyApply">REMPLACER LA CLÉ</button><button class="btn btn-outline" id="apiKeyClear">DÉSACTIVER</button></div><div class="api-key-note"><span class="api-key-state" id="apiKeyState">Clé locale intégrée · active</span> — La clé est préconfigurée dans ce fichier local et envoyée dans l’en-tête Authorization pour les statistiques du joueur. Le bouton « Désactiver » la coupe jusqu’au prochain rechargement ; une autre clé saisie ici ne sera utilisée que pendant la session. Si le serveur renvoie 401, la clé est refusée par Fortnite-API : crée une nouvelle clé sur le tableau de bord puis colle-la ici. Ne partage pas cette copie du fichier avec ta clé intégrée. <a class="api-link" href="https://dash.fortnite-api.com/" target="_blank" rel="noopener">Gérer / renouveler ma clé ↗</a></div></div>
+      <nav class="api-nav" id="apiNav" aria-label="Fonctions de l'API Fortnite">
+        <button class="active" data-api-view="stats">Stats du joueur</button><button data-api-view="shop">Boutique</button><button data-api-view="new">Nouveautés cosmétiques</button><button data-api-view="news">Actualités</button><button data-api-view="map">Carte</button><button data-api-view="playlists">Modes de jeu</button><button data-api-view="creator">Code créateur</button><button data-api-view="banners">Bannières</button><button data-api-view="colors">Couleurs de bannière</button>
+      </nav>
+      <div class="api-view" id="apiViewRoot"></div>
+    </section>
+    <div id="tabNotice" class="notice" hidden></div>
+    <div class="catalog-meta">
+      <div id="resultCount"><strong>0</strong> éléments affichés</div>
+      <div class="source-status" id="sourceStatus"><span class="source-dot offline"></span><span>Chargement du catalogue...</span></div>
+    </div>
+    <section class="item-grid" id="itemGrid" aria-live="polite"></section>
+    <div class="pagination" id="pagination"></div>
+
+    <footer class="footer">
+      <div><strong>FORTNITE COLLECTION HUB</strong> — outil de suivi de collection non officiel, créé par des fans.<br />Ce site n'est ni affilié à Epic Games ni sponsorisé par Epic Games.</div>
+      <div>Les cosmétiques proviennent de <a href="https://fortnite-api.com/" target="_blank" rel="noopener">Fortnite-API</a>. Fortnite et ses éléments restent la propriété de leurs détenteurs respectifs.<br /><span id="saveStatus">Sauvegarde locale activée.</span></div>
+    </footer>
+  </main>
+
+  <!-- Création personnalisée -->
+  <div class="modal-backdrop" id="createModal" role="dialog" aria-modal="true" aria-labelledby="createTitle">
+    <div class="modal">
+      <div class="modal-head"><h2 class="modal-title" id="createTitle">Créer un élément</h2><button class="close-btn" data-close="createModal" aria-label="Fermer">×</button></div>
+      <form class="modal-body" id="createForm">
+        <div class="form-grid">
+          <div class="field full"><label for="itemName">Nom de l'élément *</label><input id="itemName" name="name" maxlength="70" placeholder="Ex. : Gardien de la tempête" required /></div>
+          <div class="field"><label for="itemCategory">Catégorie *</label><select id="itemCategory" name="category"><option value="skin">Skin / Tenue</option><option value="spirit">Esprit</option><option value="companion">Compagnon</option><option value="equipment">Équipement</option><option value="weapon">Arme</option></select></div>
+          <div class="field" id="equipmentTypeField" hidden><label for="equipmentType">Type d'équipement</label><select id="equipmentType" name="equipmentType"><option>Sacs à dos</option><option>Planeurs</option><option>Pioches</option><option>Revêtements</option><option>Emotes</option><option>Traînées</option><option>Écrans de chargement</option><option>Musiques</option><option>Instruments</option><option>Autres</option></select></div>
+          <div class="field" id="weaponTypeField" hidden><label for="weaponType">Type d'arme</label><select id="weaponType" name="weaponType"><option>Fusils d'assaut</option><option>Fusils à pompe</option><option>PM</option><option>Snipers</option><option>Pistolets</option><option>Explosifs</option><option>Autres</option></select></div>
+          <div class="field"><label for="itemRarity">Rareté</label><select id="itemRarity" name="rarity"><option value="Légendaire">Légendaire</option><option value="Épique">Épique</option><option value="Rare">Rare</option><option value="Atypique">Atypique</option><option value="Classique">Classique</option><option value="Mythique">Mythique</option><option value="Série Icônes">Série Icônes</option><option value="Marvel">Marvel</option><option value="Star Wars">Star Wars</option><option value="Gaming Legends">Gaming Legends</option><option value="DC">DC</option></select></div>
+          <div class="field"><label for="itemSeries">Série / univers (facultatif)</label><input id="itemSeries" name="series" maxlength="50" placeholder="Ex. : Star Wars" /></div>
+          <div class="field full"><label for="itemImageUrl">Image via URL</label><input id="itemImageUrl" name="imageUrl" type="url" placeholder="https://..." /><div class="field-hint">Tu peux aussi choisir une image depuis ton appareil ci-dessous. Une seule des deux sources suffit.</div></div>
+          <div class="field full"><label for="itemImageFile">Ou importer une image locale</label><input id="itemImageFile" name="imageFile" type="file" accept="image/*" /><div class="field-hint">Format image uniquement, 5 Mo maximum. L'image est conservée dans la sauvegarde locale du navigateur.</div></div>
+          <div class="field full"><label for="itemDescription">Description (facultatif)</label><textarea id="itemDescription" name="description" maxlength="350" placeholder="Quelques mots sur ton élément..."></textarea></div>
+          <div class="field" id="damageField" hidden><label for="weaponDamage">Dégâts</label><input id="weaponDamage" type="number" min="0" max="999" step="0.1" placeholder="Ex. 36" /></div>
+          <div class="field" id="fireRateField" hidden><label for="weaponFireRate">Cadence de tir (coups/min)</label><input id="weaponFireRate" type="number" min="0" max="9999" step="1" placeholder="Ex. 450" /></div>
+          <div class="field" id="magazineField" hidden><label for="weaponMagazine">Chargeur</label><input id="weaponMagazine" type="number" min="0" max="999" step="1" placeholder="Ex. 30" /></div>
+          <div class="field" id="reloadField" hidden><label for="weaponReload">Rechargement (secondes)</label><input id="weaponReload" type="number" min="0" max="99" step="0.1" placeholder="Ex. 2.3" /></div>
+        </div>
+        <div class="form-actions"><button class="btn btn-outline" type="button" data-close="createModal">Annuler</button><button class="btn btn-primary" type="submit">＋ AJOUTER À MES CRÉATIONS</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Détail d'un élément -->
+  <div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailModalLabel">
+    <div class="modal">
+      <div class="modal-head"><h2 class="modal-title" id="detailModalLabel">Détail de l'élément</h2><button class="close-btn" data-close="detailModal" aria-label="Fermer">×</button></div>
+      <div class="modal-body" id="detailBody"></div>
+    </div>
+  </div>
+  <!-- Paramètres d'apparence -->
+  <div class="modal-backdrop" id="designModal" role="dialog" aria-modal="true" aria-labelledby="designTitle">
+    <div class="modal design-modal">
+      <div class="modal-head"><div><div class="section-kicker">PERSONNALISATION DU HUB</div><h2 class="modal-title" id="designTitle">Paramètres d'apparence</h2></div><button class="close-btn" data-close="designModal" aria-label="Fermer">×</button></div>
+      <div class="modal-body design-body">
+        <div class="design-intro"><span class="design-intro-mark">✦</span><div><strong>Change l'ambiance de ton casier.</strong><p>Choisis un univers visuel puis ajuste les couleurs, la typographie et la densité. Tes réglages sont sauvegardés automatiquement sur cet appareil.</p></div></div>
+        <div class="design-block">
+          <div class="design-block-heading"><div><span class="section-kicker">01 / UNIVERS VISUELS</span><h3>Choisir un thème</h3></div><span class="design-current" id="designCurrentLabel">FORTNITE CLASSIC</span></div>
+          <div class="theme-grid" id="themeGrid">
+            <button class="theme-card selected" type="button" data-theme-preset="fortnite"><span class="theme-preview preview-fortnite"><i></i><i></i><i></i></span><span class="theme-card-copy"><b>FORTNITE CLASSIC</b><small>Bleu nuit · jaune signature</small></span><span class="theme-check">✓</span></button>
+            <button class="theme-card" type="button" data-theme-preset="og"><span class="theme-preview preview-og"><i></i><i></i><i></i></span><span class="theme-card-copy"><b>FORTNITE OG</b><small>Bleu ciel · vert prairie · nostalgie</small></span><span class="theme-check">✓</span></button>
+            <button class="theme-card" type="button" data-theme-preset="gta6"><span class="theme-preview preview-gta"><i></i><i></i><i></i></span><span class="theme-card-copy"><b>VICE CITY / GTA VI</b><small>Rose néon · turquoise · coucher de soleil</small></span><span class="theme-check">✓</span></button>
+            <button class="theme-card" type="button" data-theme-preset="neon"><span class="theme-preview preview-neon"><i></i><i></i><i></i></span><span class="theme-card-copy"><b>NEON ARENA</b><small>Violet électrique · cyan · compétition</small></span><span class="theme-check">✓</span></button>
+            <button class="theme-card" type="button" data-theme-preset="stealth"><span class="theme-preview preview-stealth"><i></i><i></i><i></i></span><span class="theme-card-copy"><b>STEALTH OPS</b><small>Noir carbone · rouge tactique</small></span><span class="theme-check">✓</span></button>
+            <button class="theme-card" type="button" data-theme-preset="custom"><span class="theme-preview preview-custom"><i></i><i></i><i></i></span><span class="theme-card-copy"><b>PERSONNALISÉ</b><small>Tes propres couleurs</small></span><span class="theme-check">✓</span></button>
+          </div>
+        </div>
+        <div class="design-controls-grid">
+          <div class="design-block">
+            <div class="design-block-heading"><div><span class="section-kicker">02 / COULEURS</span><h3>Palette personnalisée</h3></div></div>
+            <label class="design-color-row" for="designAccent"><span><b>Couleur principale</b><small>Boutons, titres et éléments actifs</small></span><input id="designAccent" type="color" value="#ffe600" /></label>
+            <label class="design-color-row" for="designBackground"><span><b>Fond principal</b><small>Arrière-plan global du site</small></span><input id="designBackground" type="color" value="#0b101b" /></label>
+            <label class="design-color-row" for="designSecondary"><span><b>Couleur secondaire</b><small>Accents, détails et survols</small></span><input id="designSecondary" type="color" value="#55b8ff" /></label>
+          </div>
+          <div class="design-block">
+            <div class="design-block-heading"><div><span class="section-kicker">03 / INTERFACE</span><h3>Style d'affichage</h3></div></div>
+            <label class="design-field"><span>Typographie des titres</span><select id="designFont"><option value="anton">Anton — Fortnite</option><option value="barlow">Barlow Condensed — Sport</option><option value="impact">Impact — Arcade</option></select></label>
+            <label class="design-field"><span>Densité des cartes</span><select id="designDensity"><option value="comfortable">Confortable</option><option value="compact">Compacte</option><option value="wide">Grand format</option></select></label>
+            <label class="design-field"><span>Ambiance d'arrière-plan</span><select id="designAtmosphere"><option value="none">Sobre</option><option value="grid">Grille tactique</option><option value="sunset">Dégradé coucher de soleil</option><option value="scanlines">Scanlines arcade</option></select></label>
+          </div>
+        </div>
+        <div class="design-footer"><div class="design-status" id="designStatus">✓ Réglages sauvegardés automatiquement</div><button class="btn btn-outline" type="button" id="resetDesign">↺ RÉINITIALISER</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+  <script>
+  (() => {
+    'use strict';
+    const API_URL = 'https://fortnite-api.com/v2/cosmetics/br?language=fr';
+    const FORTNITE_API_BASE = 'https://fortnite-api.com';
+    // Clé personnelle intégrée pour une utilisation locale sur cet ordinateur.
+    const DEFAULT_FORTNITE_API_KEY = '585a444a-e166-46ff-a6fe-db05553a3cc2';
+    const STORAGE_KEY = 'fortnite-collection-hub-v1';
+    const DESIGN_KEY = 'fortnite-collection-design-v1';
+    const DESIGN_DEFAULTS = {theme:'fortnite',accent:'#ffe600',background:'#0b101b',secondary:'#55b8ff',font:'anton',density:'comfortable',atmosphere:'none'};
+    const DESIGN_PRESETS = {
+      fortnite:{accent:'#ffe600',background:'#0b101b',secondary:'#55b8ff',label:'FORTNITE CLASSIC'},
+      og:{accent:'#ffe75a',background:'#0b1b2b',secondary:'#66cce2',label:'FORTNITE OG'},
+      gta6:{accent:'#ff5da8',background:'#100e20',secondary:'#4de5dd',label:'VICE CITY / GTA VI'},
+      neon:{accent:'#bd72ff',background:'#100d27',secondary:'#4de7f4',label:'NEON ARENA'},
+      stealth:{accent:'#ff514f',background:'#0d1117',secondary:'#a8b0bc',label:'STEALTH OPS'},
+      custom:{accent:'#ffe600',background:'#0b101b',secondary:'#55b8ff',label:'PERSONNALISÉ'}
+    };
+    const PAGE_SIZE = 48;
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+    const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const slug = value => String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    const rarityColors = {
+      'legendaire':'#e99a42','legendary':'#e99a42','epique':'#a85de2','epic':'#a85de2','rare':'#328ce0','atypique':'#54b86a','uncommon':'#54b86a','classique':'#9ca9b8','commun':'#9ca9b8','common':'#9ca9b8','mythique':'#d9bd36','mythic':'#d9bd36','serie-icones':'#24b6b6','serie-icons':'#24b6b6','marvel':'#e34242','star-wars':'#c4b65d','gaming-legends':'#9b67d5','dc':'#4d78da'
+    };
+    const rarityClass = rarity => {
+      const r = slug(rarity);
+      if (r.includes('marvel')) return 'marvel'; if (r.includes('star-wars') || r.includes('starwars')) return 'star-wars';
+      if (r.includes('legendary')) return 'legendaire'; if (r.includes('epic')) return 'epique'; if (r.includes('uncommon')) return 'atypique'; if (r.includes('common')) return 'classique'; if (r.includes('mythic')) return 'mythique';
+      if (r.includes('icone') || r.includes('icon')) return 'serie-icones'; if (r.includes('gaming')) return 'gaming-legends'; if (r === 'dc') return 'dc';
+      return r || 'rare';
+    };
+    const rarityColor = rarity => rarityColors[rarityClass(rarity)] || '#74869d';
+    const placeholder = (name, rarity) => {
+      const color = rarityColor(rarity);
+      const letter = (name || 'F').trim().charAt(0).toUpperCase() || 'F';
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${color}"/><stop offset="1" stop-color="#15243a"/></linearGradient></defs><rect width="500" height="500" fill="url(#g)"/><path d="M0 350L500 75V500H0Z" fill="#091321" opacity=".28"/><path d="M70 70H430V430H70Z" fill="none" stroke="#fff" stroke-opacity=".24" stroke-width="3"/><text x="250" y="300" text-anchor="middle" font-family="Impact,Arial" font-size="230" fill="#fff" fill-opacity=".9">${letter.replace(/[<>&]/g,'')}</text><text x="250" y="455" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" letter-spacing="5" fill="#fff" fill-opacity=".65">COLLECTION HUB</text></svg>`;
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    };
+
+    const fallbackCosmetics = [
+      {id:'demo-skin-01',name:'Éclaireuse néon',kind:'skin',subtype:'Tenues',rarity:'Légendaire',series:'Collection Démo',description:'Élément de démonstration local. Le catalogue réel se charge depuis Fortnite-API lorsque le service est accessible.'},
+      {id:'demo-skin-02',name:'Rôdeur du crépuscule',kind:'skin',subtype:'Tenues',rarity:'Épique',series:'Collection Démo'},
+      {id:'demo-skin-03',name:'Pilote des dunes',kind:'skin',subtype:'Tenues',rarity:'Rare',series:'Collection Démo'},
+      {id:'demo-skin-04',name:'Sentinelle polaire',kind:'skin',subtype:'Tenues',rarity:'Atypique',series:'Collection Démo'},
+      {id:'demo-skin-05',name:'Champion solaire',kind:'skin',subtype:'Tenues',rarity:'Mythique',series:'Collection Démo'},
+      {id:'demo-spirit-01',name:'Esprit des braises',kind:'spirit',subtype:'Esprits',rarity:'Épique',series:'Création démo'},
+      {id:'demo-pet-01',name:'Mini-dragon',kind:'companion',subtype:'Compagnons',rarity:'Légendaire',series:'Création démo'},
+      {id:'demo-pet-02',name:'Robot de poche',kind:'companion',subtype:'Compagnons',rarity:'Rare',series:'Création démo'},
+      {id:'demo-back-01',name:'Sac du voyageur',kind:'equipment',subtype:'Sacs à dos',rarity:'Rare'},
+      {id:'demo-glider-01',name:'Aile supersonique',kind:'equipment',subtype:'Planeurs',rarity:'Épique'},
+      {id:'demo-pickaxe-01',name:'Lame électrique',kind:'equipment',subtype:'Pioches',rarity:'Légendaire'},
+      {id:'demo-wrap-01',name:'Revêtement plasma',kind:'equipment',subtype:'Revêtements',rarity:'Rare'},
+      {id:'demo-emote-01',name:'Danse du futur',kind:'equipment',subtype:'Emotes',rarity:'Atypique'},
+      {id:'demo-trail-01',name:'Traînée cosmique',kind:'equipment',subtype:'Traînées',rarity:'Épique'},
+      {id:'demo-load-01',name:'Après la tempête',kind:'equipment',subtype:'Écrans de chargement',rarity:'Rare'},
+      {id:'demo-music-01',name:'Rythme de victoire',kind:'equipment',subtype:'Musiques',rarity:'Atypique'}
+    ].map(item => ({...item, image:placeholder(item.name,item.rarity), description:item.description || 'Élément fictif de démonstration affiché lorsque le catalogue distant n’est pas disponible.', isCustom:false, source:'fallback'}));
+
+    // Valeurs indicatives de démonstration : le catalogue de cosmétiques public ne fournit pas les statistiques d'armes.
+    const weaponFallback = [
+      {id:'weapon-demo-ar-01',name:'Fusil d’assaut — exemple',kind:'weapon',subtype:'Fusils d’assaut',rarity:'Rare',damage:36,fireRate:450,magazine:30,reload:2.3,description:'Statistiques fictives de démonstration, non officielles.'},
+      {id:'weapon-demo-shotgun-01',name:'Fusil à pompe — exemple',kind:'weapon',subtype:'Fusils à pompe',rarity:'Épique',damage:92,fireRate:72,magazine:5,reload:4.1,description:'Statistiques fictives de démonstration, non officielles.'},
+      {id:'weapon-demo-smg-01',name:'PM — exemple',kind:'weapon',subtype:'PM',rarity:'Rare',damage:19,fireRate:660,magazine:30,reload:2.0,description:'Statistiques fictives de démonstration, non officielles.'},
+      {id:'weapon-demo-sniper-01',name:'Fusil de précision — exemple',kind:'weapon',subtype:'Snipers',rarity:'Légendaire',damage:110,fireRate:40,magazine:3,reload:3.2,description:'Statistiques fictives de démonstration, non officielles.'},
+      {id:'weapon-demo-pistol-01',name:'Pistolet — exemple',kind:'weapon',subtype:'Pistolets',rarity:'Atypique',damage:24,fireRate:390,magazine:15,reload:1.5,description:'Statistiques fictives de démonstration, non officielles.'},
+      {id:'weapon-demo-explosive-01',name:'Lanceur — exemple',kind:'weapon',subtype:'Explosifs',rarity:'Épique',damage:75,fireRate:60,magazine:6,reload:3.0,description:'Statistiques fictives de démonstration, non officielles.'}
+    ].map(item => ({...item,image:placeholder(item.name,item.rarity),source:'fallback',isCustom:false,isDemo:true}));
+
+    let stored = loadStore();
+    let cosmetics = fallbackCosmetics.slice();
+    let dataSource = 'fallback';
+    let currentTab = 'skins';
+    let currentFilter = 'Tous';
+    let currentSearch = '';
+    let collectionTypeFilter = 'Tous';
+    let collectionRarityFilter = 'Toutes';
+    let currentPage = 1;
+    let detailItemId = null;
+    let pendingImageData = '';
+    let lastVisibleItems = [];
+    let apiKey = DEFAULT_FORTNITE_API_KEY; // clé préconfigurée pour l'utilisation locale
+    let apiView = 'stats';
+    const apiCache = {};
+    let latestPlayerStats = null;
+
+    function loadDesign() {
+      try { return {...DESIGN_DEFAULTS,...JSON.parse(localStorage.getItem(DESIGN_KEY)||'{}')}; } catch(error) { return {...DESIGN_DEFAULTS}; }
+    }
+    let design = loadDesign();
+    function applyDesign(save=true) {
+      const root=document.documentElement;
+      document.body.dataset.theme=design.theme||'fortnite';
+      document.body.dataset.density=design.density||'comfortable';
+      document.body.dataset.atmosphere=design.atmosphere||'none';
+      root.style.setProperty('--yellow',design.accent||DESIGN_DEFAULTS.accent);
+      root.style.setProperty('--yellow-dim',design.accent||DESIGN_DEFAULTS.accent);
+      root.style.setProperty('--bg',design.background||DESIGN_DEFAULTS.background);
+      root.style.setProperty('--blue',design.secondary||DESIGN_DEFAULTS.secondary);
+      const fonts={anton:"'Anton', Impact, sans-serif",barlow:"'Barlow Condensed', 'Arial Narrow', sans-serif",impact:"Impact, 'Arial Black', sans-serif"};
+      root.style.setProperty('--font-display',fonts[design.font]||fonts.anton);
+      if(save) { try { localStorage.setItem(DESIGN_KEY,JSON.stringify(design)); } catch(error) {} }
+      syncDesignControls();
+    }
+    function syncDesignControls() {
+      const set=(id,value)=>{const el=$('#'+id);if(el)el.value=value;};
+      set('designAccent',design.accent||DESIGN_DEFAULTS.accent);
+      set('designBackground',design.background||DESIGN_DEFAULTS.background);
+      set('designSecondary',design.secondary||DESIGN_DEFAULTS.secondary);
+      set('designFont',design.font||'anton');
+      set('designDensity',design.density||'comfortable');
+      set('designAtmosphere',design.atmosphere||'none');
+      $$('#themeGrid [data-theme-preset]').forEach(button=>button.classList.toggle('selected',button.dataset.themePreset===(design.theme||'fortnite')));
+      const label=DESIGN_PRESETS[design.theme||'fortnite']?.label||'PERSONNALISÉ';
+      const current=$('#designCurrentLabel'); if(current)current.textContent=label;
+    }
+    function saveDesignFromControls() {
+      design={...design,theme:'custom',accent:$('#designAccent').value,background:$('#designBackground').value,secondary:$('#designSecondary').value,font:$('#designFont').value,density:$('#designDensity').value,atmosphere:$('#designAtmosphere').value};
+      applyDesign(true);
+      const status=$('#designStatus'); if(status)status.textContent='✓ Apparence personnalisée sauvegardée';
+    }
+    function chooseDesignPreset(theme) {
+      const preset=DESIGN_PRESETS[theme]; if(!preset)return;
+      design={...design,...preset,theme};
+      applyDesign(true);
+      const status=$('#designStatus'); if(status)status.textContent='✓ Thème '+preset.label+' appliqué';
+      toast('Thème '+preset.label+' appliqué.');
+    }
+    function resetDesign() { design={...DESIGN_DEFAULTS}; applyDesign(true); const status=$('#designStatus'); if(status)status.textContent='✓ Apparence réinitialisée'; toast('Apparence par défaut restaurée.'); }
+
+    function loadStore() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return { owned:Array.isArray(parsed.owned)?parsed.owned:[], favorites:Array.isArray(parsed.favorites)?parsed.favorites:[], customs:Array.isArray(parsed.customs)?parsed.customs:[] };
+      } catch (error) { return {owned:[],favorites:[],customs:[]}; }
+    }
+    function saveStore() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+        $('#saveStatus').textContent = 'Sauvegarde locale mise à jour.';
+      } catch (error) {
+        $('#saveStatus').textContent = 'Stockage local saturé : exporte ta sauvegarde JSON.';
+        toast('Stockage presque plein. Exporte tes données en JSON.', true);
+      }
+    }
+    function toast(message, isError = false) {
+      const el = document.createElement('div'); el.className = 'toast' + (isError ? ' error':''); el.textContent = message; $('#toastWrap').appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }
+    function normalizeApiItem(raw) {
+      const typeValue = String(raw?.type?.value || raw?.type?.displayValue || '').toLowerCase();
+      const displayType = String(raw?.type?.displayValue || raw?.type?.value || 'Cosmétique');
+      const rawRarity = raw?.rarity?.displayValue || raw?.rarity?.value || raw?.series?.value || 'Rare';
+      const rarity = String(rawRarity);
+      const series = String(raw?.series?.value || raw?.series?.name || '');
+      const name = raw?.name || 'Élément sans nom';
+      let kind = 'equipment', subtype = 'Autres';
+      if (typeValue.includes('outfit') || slug(displayType).includes('tenue')) { kind='skin'; subtype='Tenues'; }
+      else if (typeValue.includes('pet') || typeValue.includes('sidekick') || typeValue.includes('companion') || slug(displayType).includes('compagnon')) { kind='companion'; subtype='Compagnons'; }
+      else if (typeValue.includes('spirit') || slug(displayType).includes('esprit')) { kind='spirit'; subtype='Esprits'; }
+      else if (typeValue.includes('backbling') || typeValue.includes('backpack') || slug(displayType).includes('accessoire-de-dos')) subtype='Sacs à dos';
+      else if (typeValue.includes('glider') || slug(displayType).includes('planeur')) subtype='Planeurs';
+      else if (typeValue.includes('pickaxe') || slug(displayType).includes('outil-de-collecte')) subtype='Pioches';
+      else if (typeValue.includes('wrap') || slug(displayType).includes('revêtement')) subtype='Revêtements';
+      else if (typeValue.includes('emote') || slug(displayType).includes('emote')) subtype='Emotes';
+      else if (typeValue.includes('contrail') || slug(displayType).includes('traînée')) subtype='Traînées';
+      else if (typeValue.includes('loadingscreen') || slug(displayType).includes('écran-de-chargement')) subtype='Écrans de chargement';
+      else if (typeValue.includes('music') || slug(displayType).includes('musique')) subtype='Musiques';
+      else if (typeValue.includes('instrument')) subtype='Instruments';
+      else if (typeValue.includes('banner')) subtype='Bannières';
+      const image = raw?.images?.icon || raw?.images?.smallIcon || raw?.images?.featured || raw?.images?.large || '';
+      const description = raw?.description || '';
+      return {id:'api-'+String(raw?.id || slug(name)),name,kind,subtype,rarity,series,image,description,source:'api',isCustom:false,displayType,rawId:raw?.id || ''};
+    }
+    async function loadApiCatalog() {
+      setSourceStatus('Chargement du catalogue officiel via Fortnite-API...', true);
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 16000);
+        const response = await fetch(API_URL, {signal:controller.signal,headers:{'Accept':'application/json'}});
+        clearTimeout(timeout);
+        if (!response.ok) throw new Error('Réponse API : '+response.status);
+        const payload = await response.json();
+        if (!payload || !Array.isArray(payload.data) || !payload.data.length) throw new Error('Format de données inattendu');
+        cosmetics = payload.data.map(normalizeApiItem).filter(item => item.name && item.id);
+        dataSource = 'api'; currentPage=1; renderAll();
+        setSourceStatus(`${cosmetics.length.toLocaleString('fr-FR')} cosmétiques chargés depuis Fortnite-API`, false);
+        toast('Catalogue Fortnite chargé.');
+      } catch (error) {
+        dataSource = 'fallback'; cosmetics = fallbackCosmetics.slice(); renderAll();
+        setSourceStatus('Mode secours local — API indisponible', true);
+      }
+    }
+    function setSourceStatus(message, offline) {
+      $('#sourceStatus').innerHTML = `<span class="source-dot ${offline?'offline':''}"></span><span>${escapeHTML(message)}</span>`;
+    }
+    function allItems() { return [...cosmetics, ...stored.customs, ...weaponFallback, ...stored.customs.filter(x=>x.kind==='weapon')]; }
+    function getTabItems() {
+      const customs = stored.customs;
+      let items = [];
+      if (currentTab==='skins') items = [...cosmetics.filter(x=>x.kind==='skin'), ...customs.filter(x=>x.kind==='skin')];
+      if (currentTab==='companions') items = [...cosmetics.filter(x=>x.kind==='spirit'||x.kind==='companion'), ...customs.filter(x=>x.kind==='spirit'||x.kind==='companion')];
+      if (currentTab==='equipment') items = [...cosmetics.filter(x=>x.kind==='equipment'), ...customs.filter(x=>x.kind==='equipment')];
+      if (currentTab==='weapons') items = [...weaponFallback, ...customs.filter(x=>x.kind==='weapon')];
+      if (currentTab==='creations') items = customs;
+      if (currentTab==='collection') {
+        const ownedItems = [...cosmetics,...customs].filter(item=>item.kind!=='weapon' && stored.owned.includes(item.id));
+        const favoriteWeapons = [...weaponFallback,...customs.filter(x=>x.kind==='weapon')].filter(item=>stored.favorites.includes(item.id));
+        if (collectionTypeFilter==='favorites') items = favoriteWeapons;
+        else {
+          items = collectionTypeFilter==='Tous' ? [...ownedItems,...favoriteWeapons] : ownedItems.filter(item=>item.kind===collectionTypeFilter);
+        }
+        if (collectionRarityFilter!=='Toutes') items = items.filter(item=>item.rarity===collectionRarityFilter);
+      }
+      if (currentTab==='companions' && currentFilter!=='Tous') items = items.filter(item => currentFilter==='Esprits' ? item.kind==='spirit' : item.kind==='companion');
+      if (currentTab==='equipment' && currentFilter!=='Tous') items = items.filter(item => item.subtype===currentFilter);
+      if (currentTab==='weapons' && currentFilter!=='Tous') items = currentFilter==='★ Favoris' ? items.filter(item=>stored.favorites.includes(item.id)) : items.filter(item=>item.subtype===currentFilter);
+      if (currentTab==='creations' && currentFilter!=='Tous') items = items.filter(item=>item.kind===currentFilter);
+      if (currentSearch.trim()) {
+        const normalizeSearch = value => String(value ?? '').toLocaleLowerCase('fr').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+        const q = normalizeSearch(currentSearch.trim());
+        const kindAliases = {skin:'skin skins tenue tenues',spirit:'esprit esprits',companion:'compagnon compagnons',equipment:'equipement equipements accessoire accessoires',weapon:'arme armes'};
+        items = items.filter(item => normalizeSearch([item.name,item.rarity,item.series,item.subtype,item.description,item.kind,kindAliases[item.kind]||''].join(' ')).includes(q));
+      }
+      return items;
+    }
+    function tabCounts() {
+      const all = [...cosmetics,...stored.customs];
+      return {
+        skins:all.filter(x=>x.kind==='skin').length,
+        companions:all.filter(x=>x.kind==='spirit'||x.kind==='companion').length,
+        equipment:all.filter(x=>x.kind==='equipment').length,
+        weapons:weaponFallback.length+stored.customs.filter(x=>x.kind==='weapon').length,
+        collection:stored.owned.filter(id=>[...cosmetics,...stored.customs].some(item=>item.id===id && item.kind!=='weapon')).length,
+        creations:stored.customs.length
+      };
+    }
+    function updateProgress() {
+      const tracked = [...cosmetics,...stored.customs].filter(item => item.kind!=='weapon');
+      const ownedSet = new Set(stored.owned);
+      const ownedCount = tracked.filter(item=>ownedSet.has(item.id)).length;
+      const total = tracked.length;
+      const percent = total ? Math.round(ownedCount/total*100) : 0;
+      $('#heroOwned').textContent = ownedCount.toLocaleString('fr-FR');
+      $('#heroTotal').textContent = total.toLocaleString('fr-FR');
+      $('#heroCustom').textContent = stored.customs.length.toLocaleString('fr-FR');
+      $('#progressFill').style.width = percent+'%';
+      $('#progressText').textContent = `${ownedCount.toLocaleString('fr-FR')} / ${total.toLocaleString('fr-FR')} · ${percent} %`;
+      Object.entries(tabCounts()).forEach(([key,value]) => { const el=$('#count-'+key); if(el) el.textContent=value.toLocaleString('fr-FR'); });
+    }
+    function getFilters() {
+      if (currentTab==='skins') return [];
+      if (currentTab==='companions') return ['Tous','Esprits','Compagnons'];
+      if (currentTab==='equipment') return ['Tous','Sacs à dos','Planeurs','Pioches','Revêtements','Emotes','Traînées','Écrans de chargement','Musiques','Instruments','Bannières','Autres'];
+      if (currentTab==='weapons') return ['Tous','★ Favoris','Fusils d’assaut','Fusils à pompe','PM','Snipers','Pistolets','Explosifs','Autres'];
+      if (currentTab==='creations') return ['Tous','skin','spirit','companion','equipment','weapon'];
+      return [];
+    }
+    function filterLabel(filter) { return ({skin:'Skins',spirit:'Esprits',companion:'Compagnons',equipment:'Équipements',weapon:'Armes'})[filter] || filter; }
+    function renderFilters() {
+      const filters = getFilters();
+      const panel = $('#filterPanel');
+      if (!filters.length) { panel.innerHTML=''; panel.style.display='none'; return; }
+      panel.style.display='flex';
+      const caption = currentTab==='equipment'?'Type d’équipement':currentTab==='weapons'?'Type d’arme':currentTab==='companions'?'Afficher':'Filtrer';
+      panel.innerHTML = `<span class="filter-caption">${caption}</span>` + filters.map(filter => `<button class="filter-chip ${currentFilter===filter?'active':''}" data-filter="${escapeHTML(filter)}">${escapeHTML(filterLabel(filter))}</button>`).join('');
+    }
+    function currentHeading() {
+      return ({skins:'Skins',companions:'Esprits & Compagnons',equipment:'Sacs à dos, Planeurs & Équipements',weapons:'Arsenal Armes',collection:'Ma collection',creations:'Mes créations',api:'API Fortnite'})[currentTab];
+    }
+    function renderCollectionPanel() {
+      const panel=$('#collectionPanel');
+      const active=currentTab==='collection';
+      panel.hidden=!active;
+      if(!active) return;
+      const ownedItems=[...cosmetics,...stored.customs].filter(item=>item.kind!=='weapon' && stored.owned.includes(item.id));
+      const allWeapons=[...weaponFallback,...stored.customs.filter(x=>x.kind==='weapon')];
+      const favoriteWeapons=allWeapons.filter(item=>stored.favorites.includes(item.id));
+      const skins=ownedItems.filter(item=>item.kind==='skin').length;
+      const spirits=ownedItems.filter(item=>item.kind==='spirit').length;
+      const companions=ownedItems.filter(item=>item.kind==='companion').length;
+      const equipment=ownedItems.filter(item=>item.kind==='equipment').length;
+      const rarityMap=new Map();
+      ownedItems.forEach(item=>{const rarity=item.rarity||'Sans rareté';rarityMap.set(rarity,(rarityMap.get(rarity)||0)+1);});
+      const rarityHTML=[...rarityMap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8).map(([rarity,count])=>`<span class="collection-rarity"><i style="--rarity-color:${rarityColor(rarity)}"></i>${escapeHTML(rarity)} · ${count}</span>`).join('');
+      const total=ownedItems.length;
+      const catalogTotal=[...cosmetics,...stored.customs].filter(item=>item.kind!=='weapon').length;
+      const percent=catalogTotal?Math.round(total/catalogTotal*100):0;
+      const rarityOptions=[...new Set([...ownedItems,...favoriteWeapons].map(item=>item.rarity).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
+      panel.innerHTML=`
+        <div class="section-kicker">Ton casier en un coup d’œil</div>
+        <h3 class="collection-section-title">Résumé de ta collection</h3>
+        <div class="collection-overview">
+          <div class="collection-metric"><strong>${total.toLocaleString('fr-FR')}</strong><span>Objets possédés</span></div>
+          <div class="collection-metric"><strong>${skins.toLocaleString('fr-FR')}</strong><span>Skins</span></div>
+          <div class="collection-metric"><strong>${spirits.toLocaleString('fr-FR')}</strong><span>Esprits</span></div>
+          <div class="collection-metric"><strong>${companions.toLocaleString('fr-FR')}</strong><span>Compagnons</span></div>
+          <div class="collection-metric"><strong>${equipment.toLocaleString('fr-FR')}</strong><span>Équipements</span></div>
+          <div class="collection-metric"><strong>${favoriteWeapons.length.toLocaleString('fr-FR')}</strong><span>Armes favorites</span></div>
+        </div>
+        <div class="collection-progress-row">
+          <div class="collection-progress-label">Avancement des cosmétiques</div>
+          <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
+          <div class="collection-progress-value">${total.toLocaleString('fr-FR')} / ${catalogTotal.toLocaleString('fr-FR')} · ${percent} %</div>
+        </div>
+        <div class="collection-rarities"><span class="filter-caption">Raretés possédées</span>${rarityHTML||'<span class="collection-hint">Coche des éléments dans les autres onglets pour voir tes raretés ici.</span>'}</div>
+        <div class="collection-tools">
+          <input id="collectionSearch" type="search" value="${escapeHTML(currentSearch)}" placeholder="Rechercher un skin, un équipement, une rareté..." aria-label="Rechercher dans ma collection" />
+          <select id="collectionTypeFilter" aria-label="Filtrer par catégorie">
+            <option value="Tous" ${collectionTypeFilter==='Tous'?'selected':''}>Toutes les catégories</option>
+            <option value="skin" ${collectionTypeFilter==='skin'?'selected':''}>Skins</option>
+            <option value="spirit" ${collectionTypeFilter==='spirit'?'selected':''}>Esprits</option>
+            <option value="companion" ${collectionTypeFilter==='companion'?'selected':''}>Compagnons</option>
+            <option value="equipment" ${collectionTypeFilter==='equipment'?'selected':''}>Équipements</option>
+            <option value="favorites" ${collectionTypeFilter==='favorites'?'selected':''}>Armes favorites</option>
+          </select>
+          <select id="collectionRarityFilter" aria-label="Filtrer par rareté">
+            <option value="Toutes" ${collectionRarityFilter==='Toutes'?'selected':''}>Toutes les raretés</option>
+            ${rarityOptions.map(rarity=>`<option value="${escapeHTML(rarity)}" ${collectionRarityFilter===rarity?'selected':''}>${escapeHTML(rarity)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="collection-hint">La liste ci-dessous affiche les objets que tu as cochés comme possédés. Les armes apparaissent ici uniquement si tu les as ajoutées à tes favoris dans l’onglet Arsenal Armes.</div>`;
+    }
+
+    function cardHTML(item) {
+      const color = rarityColor(item.rarity || item.series);
+      const owned = stored.owned.includes(item.id);
+      const isWeapon = item.kind==='weapon';
+      const image = item.image || placeholder(item.name,item.rarity);
+      const typeLabel = item.kind==='skin'?'Tenue':item.kind==='spirit'?'Esprit':item.kind==='companion'?'Compagnon':item.kind==='weapon'?item.subtype:item.subtype || 'Équipement';
+      const stats = isWeapon ? `<div class="weapon-stats"><div class="weapon-stat"><b>${item.damage ?? '—'}</b><span>Dégâts</span></div><div class="weapon-stat"><b>${item.fireRate ?? '—'}</b><span>Tir / min</span></div><div class="weapon-stat"><b>${item.magazine ?? '—'}</b><span>Chargeur</span></div><div class="weapon-stat"><b>${item.reload ?? '—'}s</b><span>Recharge</span></div></div>` : '';
+      return `<article class="item-card ${owned?'owned':''} ${isWeapon?'weapon-card':''}" data-open-item="${escapeHTML(item.id)}" style="--rarity:${color}">
+        <div class="item-art"><img src="${escapeHTML(image)}" alt="${escapeHTML(item.name)}" loading="lazy" onerror="this.onerror=null;this.src='${placeholder(item.name,item.rarity)}'" /><span class="rarity-tag">${escapeHTML(item.rarity || 'Sans rareté')}</span>
+          ${item.isCustom?'<span class="custom-tag">PERSO</span>':item.source==='fallback'?'<span class="demo-tag">DÉMO</span>':''}
+          ${isWeapon?`<button class="weapon-fav ${stored.favorites.includes(item.id)?'active':''}" data-action="favorite" data-id="${escapeHTML(item.id)}" aria-label="Ajouter aux favoris">${stored.favorites.includes(item.id)?'★':'☆'}</button>`:(item.kind!=='weapon'?`<span class="owned-mark" ${owned?'':'hidden'}>✓</span>`:'')}
+        </div>
+        <div class="item-info"><div class="item-type">${escapeHTML(typeLabel)}</div><div class="item-name">${escapeHTML(item.name)}</div>${stats}
+          <div class="item-foot"><span class="item-series">${escapeHTML(item.series || item.rarity || '')}</span>${!isWeapon?`<button class="card-check" data-action="owned" data-id="${escapeHTML(item.id)}" aria-label="${owned?'Retirer de':'Marquer comme'} possédé">${owned?'✓':'＋'}</button>`:''}</div>
+        </div>
+      </article>`;
+    }
+    function renderGrid() {
+      const items = getTabItems();
+      lastVisibleItems = items;
+      const totalPages = Math.max(1,Math.ceil(items.length/PAGE_SIZE));
+      if (currentPage>totalPages) currentPage=totalPages;
+      const start=(currentPage-1)*PAGE_SIZE;
+      const visible=items.slice(start,start+PAGE_SIZE);
+      $('#resultCount').innerHTML = currentTab==='collection' ? `<strong>${items.length.toLocaleString('fr-FR')}</strong> élément${items.length>1?'s':''} dans ta collection · page ${currentPage}/${totalPages}` : `<strong>${items.length.toLocaleString('fr-FR')}</strong> élément${items.length>1?'s':''} · page ${currentPage}/${totalPages}`;
+      const grid=$('#itemGrid');
+      if (!visible.length) {
+        const text = currentTab==='collection' ? (currentSearch.trim() || collectionTypeFilter!=='Tous' || collectionRarityFilter!=='Toutes' ? 'Aucun élément ne correspond à ces critères. Essaie une autre recherche ou un autre filtre.' : 'Ta collection est encore vide. Dans les onglets Skins, Esprits & Compagnons et Équipements, utilise le bouton + pour marquer les éléments que tu possèdes.') : currentTab==='companions' && currentFilter==='Esprits' ? 'Aucun esprit dans ce catalogue pour le moment. Ajoute tes propres esprits avec le bouton « Créer un élément ».' : currentTab==='creations' ? 'Tu n’as pas encore ajouté de création. Crée ton premier élément personnalisé pour le retrouver ici.' : 'Aucun élément ne correspond à ta recherche ou à ce filtre.';
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-symbol">＋</div><h3>Rien à afficher</h3><p>${escapeHTML(text)}</p><button class="btn btn-primary" data-empty-create>＋ CRÉER UN ÉLÉMENT</button></div>`;
+      } else grid.innerHTML=visible.map(cardHTML).join('');
+      renderPagination(totalPages);
+    }
+    function renderPagination(totalPages) {
+      const pagination=$('#pagination');
+      if (totalPages<=1) { pagination.innerHTML=''; return; }
+      let pages=[];
+      const min=Math.max(1,currentPage-2), max=Math.min(totalPages,currentPage+2);
+      for(let p=min;p<=max;p++) pages.push(`<button class="page-btn ${p===currentPage?'active':''}" data-page="${p}">${p}</button>`);
+      pagination.innerHTML=`<button class="page-btn" data-page="${currentPage-1}" ${currentPage===1?'disabled':''}>←</button>${currentPage>3?'<span class="catalog-meta">…</span>':''}${pages.join('')}${currentPage<totalPages-2?'<span class="catalog-meta">…</span>':''}<button class="page-btn" data-page="${currentPage+1}" ${currentPage===totalPages?'disabled':''}>→</button>`;
+    }
+    function apiViewHeading() {
+      return ({stats:'Statistiques du joueur',shop:'Boutique Fortnite du jour',new:'Nouveaux cosmétiques',news:'Actualités Fortnite',map:'Carte de l’île',playlists:'Modes de jeu',creator:'Vérifier un code créateur',banners:'Bannières de profil',colors:'Couleurs de bannière'})[apiView] || 'Données Fortnite';
+    }
+    function renderApiHub() {
+      $$('#apiNav [data-api-view]').forEach(button=>button.classList.toggle('active',button.dataset.apiView===apiView));
+      const root=$('#apiViewRoot');
+      if(apiView==='stats') {
+        root.innerHTML=`<h3 class="api-view-title">Statistiques Battle Royale</h3><p class="api-subtitle">Recherche un pseudo public Epic, PlayStation ou Xbox. Tu peux afficher les statistiques de saison ou de toute la carrière, selon les données publiques disponibles.</p>
+          <form class="api-form" id="playerStatsForm"><div class="field"><label for="playerLookup">Rechercher avec</label><select id="playerLookup"><option value="name">Pseudo</option><option value="id">ID de compte Epic</option></select></div><div class="field"><label for="playerName">Pseudo ou identifiant</label><input id="playerName" maxlength="100" required placeholder="Ex. : Ninja ou ID Epic" /></div><div class="field" id="playerPlatformField"><label for="playerPlatform">Plateforme du compte</label><select id="playerPlatform"><option value="epic">Epic Games</option><option value="psn">PlayStation Network</option><option value="xbl">Xbox Live</option></select></div><div class="field"><label for="playerWindow">Période</label><select id="playerWindow"><option value="lifetime">Toute la carrière</option><option value="season">Saison actuelle</option></select></div><div class="field"><label for="playerImage">Carte statistique</label><select id="playerImage"><option value="none">Sans carte</option><option value="all">Toutes plateformes</option><option value="keyboardMouse">Clavier / souris</option><option value="gamepad">Manette</option><option value="touch">Écran tactile</option></select></div><button class="btn btn-primary" type="submit">⌕ RECHERCHER LES STATS</button></form>
+          <div class="api-results" id="playerStatsResults"><div class="api-empty">Entre le pseudo du joueur et utilise une clé API pour afficher ses statistiques. Les profils privés ou sans statistiques publiques peuvent ne rien retourner.</div></div>`;
+      } else if(apiView==='shop') {
+        root.innerHTML=`<h3 class="api-view-title">Boutique du jour</h3><p class="api-subtitle">Objets, offres et prix en V-Bucks publiés dans la boutique actuelle. Cette requête est publique et ne nécessite pas de clé API.</p><div class="api-results" id="apiDataResults"><div class="api-loading">Chargement de la boutique…</div></div>`;
+      } else if(apiView==='new') {
+        root.innerHTML=`<h3 class="api-view-title">Nouveaux cosmétiques</h3><p class="api-subtitle">Derniers objets ajoutés aux données Fortnite : tenues, emotes, accessoires et autres cosmétiques.</p><div class="api-results" id="apiDataResults"><div class="api-loading">Chargement des nouveautés…</div></div>`;
+      } else if(apiView==='news') {
+        root.innerHTML=`<h3 class="api-view-title">Actualités du jeu</h3><p class="api-subtitle">Actualités Battle Royale, Sauver le monde et Créatif, en français.</p><div class="api-results" id="apiDataResults"><div class="api-loading">Chargement des actualités…</div></div>`;
+      } else if(apiView==='map') {
+        root.innerHTML=`<h3 class="api-view-title">Carte actuelle</h3><p class="api-subtitle">Carte de l’île et lieux nommés (POI) exposés par Fortnite-API.</p><div class="api-results" id="apiDataResults"><div class="api-loading">Chargement de la carte…</div></div>`;
+      } else if(apiView==='playlists') {
+        root.innerHTML=`<h3 class="api-view-title">Modes de jeu et playlists</h3><p class="api-subtitle">Modes de jeu actuellement référencés par l’API.</p><div class="api-results" id="apiDataResults"><div class="api-loading">Chargement des modes…</div></div>`;
+      } else if(apiView==='creator') {
+        root.innerHTML=`<h3 class="api-view-title">Vérifier un code créateur</h3><p class="api-subtitle">Vérifie si un code de soutien aux créateurs existe et consulte les informations renvoyées par l’API. Aucune clé n’est requise.</p><form class="api-form" id="creatorForm"><div class="field"><label for="creatorCode">Code créateur</label><input id="creatorCode" maxlength="80" required placeholder="Nom du créateur" /></div><button class="btn btn-primary" type="submit">VÉRIFIER LE CODE</button></form><div class="api-results" id="creatorResults"><div class="api-empty">Saisis un code créateur pour lancer la recherche.</div></div>`;
+      } else if(apiView==='banners') {
+        root.innerHTML=`<h3 class="api-view-title">Bannières de profil</h3><p class="api-subtitle">Catalogue des bannières de profil disponibles dans les données publiques.</p><div class="api-results" id="apiDataResults"><div class="api-loading">Chargement des bannières…</div></div>`;
+      } else if(apiView==='colors') {
+        root.innerHTML=`<h3 class="api-view-title">Couleurs de bannière</h3><p class="api-subtitle">Palette officielle des couleurs utilisées par les bannières de profil.</p><div class="api-results" id="apiDataResults"><div class="api-loading">Chargement des couleurs…</div></div>`;
+      }
+      if(['shop','new','news','map','playlists','banners','colors'].includes(apiView)) loadPublicApi(apiView);
+    }
+    function apiImage(item) {
+      return item?.images?.featured || item?.images?.icon || item?.images?.smallIcon || item?.image || item?.icon || item?.banner?.image || '';
+    }
+    function apiCard(item, fallbackTitle='Élément') {
+      const title=item?.name || item?.title || item?.tabTitle || item?.displayName || item?.id || fallbackTitle;
+      const desc=item?.description || item?.body || item?.shortDescription || item?.text || '';
+      const img=apiImage(item);
+      const price=item?.finalPrice ?? item?.regularPrice ?? item?.price ?? item?.vBucks ?? null;
+      const extra=price!==null?`${Number(price).toLocaleString('fr-FR')} V-Bucks`:item?.rarity?.displayValue || item?.type?.displayValue || item?.type || '';
+      return `<article class="api-card">${img?`<img src="${escapeHTML(img)}" alt="${escapeHTML(title)}" loading="lazy" onerror="this.style.display='none'">`:''}<div class="api-card-body"><h4>${escapeHTML(title)}</h4><p>${escapeHTML(String(desc).replace(/<[^>]*>/g,' ').slice(0,210))}</p>${extra?`<div class="api-card-meta">${escapeHTML(extra)}</div>`:''}</div></article>`;
+    }
+    function findArrayDeep(obj, keys, depth=0) {
+      if(!obj || depth>4) return [];
+      for(const key of keys) if(Array.isArray(obj[key])) return obj[key];
+      if(typeof obj==='object') for(const value of Object.values(obj)) { if(value && typeof value==='object') { const found=findArrayDeep(value,keys,depth+1); if(found.length) return found; } }
+      return [];
+    }
+    function renderApiError(targetId,message) {
+      const el=$('#'+targetId); if(el) el.innerHTML=`<div class="api-error">${escapeHTML(message)}</div>`;
+    }
+    function normalizeApiKey(value) {
+      // Accepte une clé copiée seule ou précédée du libellé « ApiKey ».
+      return String(value || '').trim().replace(/^ApiKey\s+/i, '').replace(/^Bearer\s+/i, '').replace(/^['\"]|['\"]$/g, '').trim();
+    }
+    async function fetchFortnite(path, options={}) {
+      const cleanKey = normalizeApiKey(apiKey);
+      if(options.auth && !cleanKey) throw Object.assign(new Error('Aucune clé API active.'), {status:401});
+      const headers = {'Accept':'application/json'};
+      // Fortnite-API attend précisément « Authorization: ApiKey <GUID> ».
+      if(options.auth) headers.Authorization = 'ApiKey ' + cleanKey;
+      let response;
+      try {
+        response = await fetch(FORTNITE_API_BASE + path, {method:'GET',headers,signal:options.signal,cache:'no-store'});
+      } catch(networkError) {
+        throw new Error('Connexion impossible à fortnite-api.com. Vérifie Internet, puis réessaie. Détail : ' + (networkError?.message || 'erreur réseau'));
+      }
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok || (payload.status && Number(payload.status)>=400)) {
+        const message=payload.error || payload.message || payload.detail || `Erreur HTTP ${response.status}`;
+        const error = new Error(`${message} (HTTP ${response.status})`);
+        error.status = response.status;
+        error.payload = payload;
+        throw error;
+      }
+      return payload;
+    }
+    async function loadPublicApi(view) {
+      const target=$('#apiDataResults'); if(!target) return;
+      if(apiCache[view]) { renderPublicApi(view,apiCache[view]); return; }
+      const paths={shop:'/v2/shop?language=fr',new:'/v2/cosmetics/new?language=fr',news:'/v2/news?language=fr',map:'/v1/map?language=fr',playlists:'/v1/playlists?language=fr',banners:'/v1/banners?language=fr',colors:'/v1/banners/colors?language=fr'};
+      try {
+        const data=await fetchFortnite(paths[view]); apiCache[view]=data; renderPublicApi(view,data);
+      } catch(error) { renderApiError('apiDataResults',`Impossible de charger ces données : ${error.message}. Vérifie ta connexion ou réessaie plus tard.`); }
+    }
+    function renderPublicApi(view,payload) {
+      const target=$('#apiDataResults'); if(!target) return;
+      const data=payload?.data ?? payload;
+      if(view==='new') {
+        const list=Array.isArray(data)?data:findArrayDeep(data,['items','cosmetics','new']);
+        target.innerHTML=list.length?`<div class="catalog-meta"><strong>${list.length.toLocaleString('fr-FR')}</strong> nouveautés</div><div class="api-card-grid">${list.map(item=>apiCard(item)).join('')}</div>`:'<div class="api-empty">Aucun nouveau cosmétique détecté dans la réponse.</div>';
+      } else if(view==='colors') {
+        const list=Array.isArray(data)?data:findArrayDeep(data,['colors','items']);
+        target.innerHTML=list.length?`<div class="api-card-grid">${list.map(item=>{const name=item.name||item.id||item.color||'Couleur';const value=item.color||item.value||item.hex||item.primaryColor||'#33445b';return `<article class="api-card"><div style="height:90px;background:${/^#[0-9a-f]{3,8}$/i.test(value)?value:'#33445b'}"></div><div class="api-card-body"><h4>${escapeHTML(name)}</h4><div class="api-card-meta">${escapeHTML(value)}</div></div></article>`;}).join('')}</div>`:'<div class="api-empty">Aucune couleur détectée dans la réponse.</div>';
+      } else if(view==='shop') {
+        let entries=Array.isArray(data?.entries)?data.entries:(Array.isArray(data?.shop?.entries)?data.shop.entries:findArrayDeep(data,['entries']));
+        const items=[];
+        entries.forEach(entry=>{
+          const products=Array.isArray(entry?.items)?entry.items:[entry?.items||entry?.item||entry];
+          products.forEach(item=>items.push({...item,finalPrice:item.finalPrice??entry.finalPrice??entry.price??entry.regularPrice,regularPrice:item.regularPrice??entry.regularPrice}));
+        });
+        if(!items.length && Array.isArray(data)) items.push(...data);
+        target.innerHTML=items.length?`<div class="catalog-meta"><strong>${items.length.toLocaleString('fr-FR')}</strong> offres / objets détectés</div><div class="api-card-grid">${items.map(item=>apiCard(item)).join('')}</div>`:'<div class="api-empty">La réponse de l’API ne contient aucune offre actuellement.</div>';
+      } else if(view==='news') {
+        const sections=[];
+        ['br','stw','creative'].forEach(key=>{const list=findArrayDeep(data?.[key]||{},['motds','messages','news']); if(list.length) sections.push(`<h4 class="collection-section-title">${key==='br'?'Battle Royale':key==='stw'?'Sauver le monde':'Créatif'}</h4><div class="api-card-grid">${list.map(item=>apiCard(item)).join('')}</div>`);});
+        if(!sections.length) { const list=findArrayDeep(data,['motds','messages','news']); if(list.length) sections.push(`<div class="api-card-grid">${list.map(item=>apiCard(item)).join('')}</div>`); }
+        target.innerHTML=sections.join('')||'<div class="api-empty">Aucune actualité trouvée dans la réponse.</div>';
+      } else if(view==='map') {
+        const images=data?.images||{}; const mapUrl=images.blank||images.pois||images.full||images.image||data?.image||'';
+        const pois=Array.isArray(data?.pois)?data.pois:findArrayDeep(data,['pois','locations']);
+        target.innerHTML=`${mapUrl?`<img class="api-map-image" src="${escapeHTML(mapUrl)}" alt="Carte actuelle de Fortnite" loading="lazy">`:'<div class="api-empty">L’API n’a pas renvoyé d’URL de carte exploitable.</div>'}${pois.length?`<h4 class="collection-section-title" style="margin-top:16px">Lieux nommés · ${pois.length}</h4><div class="api-poi-list">${pois.map(p=>`<span class="api-poi">${escapeHTML(p.name||p.id||'Lieu')}</span>`).join('')}</div>`:''}`;
+      } else if(view==='playlists') {
+        const list=Array.isArray(data)?data:findArrayDeep(data,['playlists','modes','items']);
+        target.innerHTML=list.length?`<div class="catalog-meta"><strong>${list.length.toLocaleString('fr-FR')}</strong> modes disponibles</div><div class="api-card-grid">${list.map(item=>apiCard(item,item.id||'Mode')).join('')}</div>`:'<div class="api-empty">Aucun mode détecté dans la réponse.</div>';
+      } else if(view==='banners') {
+        const list=Array.isArray(data)?data:findArrayDeep(data,['banners','items']);
+        target.innerHTML=list.length?`<div class="catalog-meta"><strong>${list.length.toLocaleString('fr-FR')}</strong> bannières</div><div class="api-card-grid">${list.map(item=>apiCard(item)).join('')}</div>`:'<div class="api-empty">Aucune bannière détectée dans la réponse.</div>';
+      }
+    }
+    function numberStat(obj, keys) {
+      for(const key of keys) { const v=obj?.[key]; if(v!==undefined && v!==null && v!=='') return v; }
+      return '—';
+    }
+    function statCard(label,value) { return `<div class="api-metric"><strong>${escapeHTML(value)}</strong><span>${escapeHTML(label)}</span></div>`; }
+    function modeCard(label,obj) {
+      if(!obj) return '';
+      return `<article class="api-mode"><h4>${label}</h4><div class="api-mode-stats"><div><b>${escapeHTML(numberStat(obj,['wins']))}</b><span>Victoires</span></div><div><b>${escapeHTML(numberStat(obj,['kills']))}</b><span>Éliminations</span></div><div><b>${escapeHTML(numberStat(obj,['matches','matchesPlayed']))}</b><span>Parties</span></div><div><b>${escapeHTML(numberStat(obj,['kd','kD','kdr']))}</b><span>K/D</span></div></div></article>`;
+    }
+    async function loadPlayerStats(event) {
+      event.preventDefault();
+      const result=$('#playerStatsResults');
+      const name=$('#playerName').value.trim(); const lookup=$('#playerLookup').value; const platform=$('#playerPlatform').value; const period=$('#playerWindow').value; const imageMode=$('#playerImage').value;
+      if(!apiKey) { result.innerHTML='<div class="api-error">Ajoute d’abord ta clé API dans le panneau jaune ci-dessus. La clé est obligatoire pour consulter les statistiques de joueur.</div>'; return; }
+      if(!name) return;
+      result.innerHTML='<div class="api-loading">Recherche des statistiques du joueur…</div>';
+      try {
+        const query=lookup==='id'?new URLSearchParams({timeWindow:period,image:imageMode}):new URLSearchParams({name,accountType:platform,timeWindow:period,image:imageMode});
+        const path=lookup==='id'?('/v2/stats/br/v2/'+encodeURIComponent(name)+'?'+query.toString()):('/v2/stats/br/v2?'+query.toString());
+        const payload=await fetchFortnite(path,{auth:true});
+        latestPlayerStats=payload;
+        renderPlayerStats(payload,name,platform,period,imageMode);
+      } catch(error) {
+        let guidance = 'Vérifie le pseudo, la plateforme et que les statistiques du joueur sont publiques.';
+        if(error.status === 401 || /invalid or missing api key|unauthorized/i.test(error.message)) {
+          guidance = 'Le code envoie déjà la clé au format exigé par Fortnite-API : Authorization: ApiKey <GUID>. Le serveur refuse donc cette valeur : elle est probablement invalide, révoquée, inactive ou ne provient pas du compte Fortnite-API correspondant. Ouvre le tableau de bord Fortnite-API, crée ou copie une nouvelle clé API, puis colle-la dans le champ jaune « Remplacer la clé » et réessaie. Une clé Epic OAuth ou une clé d’un autre service ne fonctionne pas ici.';
+        } else if(error.status === 403) {
+          guidance = 'La clé a été reçue, mais l’accès à cette ressource est refusé. Vérifie les droits de la clé et que le joueur n’a pas masqué ses statistiques.';
+        } else if(error.status === 404) {
+          guidance = 'Joueur introuvable. Essaie son pseudo Epic exact ou son identifiant de compte Epic.';
+        } else if(error.status === 429) {
+          guidance = 'Limite de requêtes atteinte. Attends un peu avant de réessayer.';
+        }
+        result.innerHTML=`<div class="api-error"><strong>Échec de la recherche</strong><br>${escapeHTML(error.message)}<br><br>${escapeHTML(guidance)}</div>`;
+      }
+    }
+    function renderPlayerStats(payload,requestedName,platform,period,imageMode) {
+      const root=payload?.data||{}; const statRoot=root.stats||{};
+      const all=statRoot.all||statRoot.overall||{};
+      const overall=all.overall||statRoot.overall||root.overall||{};
+      const info=root.account||root.info||{};
+      const playerName=info.name||info.username||requestedName;
+      const avatar=info.image||root.image||'';
+      const statsImage=typeof root.image==='string'&&/^https?:/i.test(root.image)?root.image:(typeof payload?.image==='string'&&/^https?:/i.test(payload.image)?payload.image:'');
+      const modes=all;
+      const wins=numberStat(overall,['wins']); const kills=numberStat(overall,['kills']); const kd=numberStat(overall,['kd','kD']); const matches=numberStat(overall,['matches','matchesPlayed']); const winRate=numberStat(overall,['winRate','win_rate']);
+      const statsAvailable=Object.keys(overall||{}).length>0;
+      const battlePass=root.battlePass||root.battlepass||{};
+      const platformLabel=({epic:'Epic Games',psn:'PlayStation',xbl:'Xbox'})[platform]||platform;
+      $('#playerStatsResults').innerHTML=`<div class="api-profile-head">${avatar?`<img class="api-profile-avatar" src="${escapeHTML(avatar)}" alt="">`:''}<div><strong>${escapeHTML(playerName)}</strong><span>${platformLabel} · ${period==='season'?'Saison actuelle':'Toute la carrière'} · ${(info.accountId||info.id)?'ID : '+escapeHTML(info.accountId||info.id):'Profil public'}</span></div></div>
+        ${statsAvailable?`${statsImage?`<img class="api-map-image" style="max-width:760px;margin-bottom:12px" src="${escapeHTML(statsImage)}" alt="Carte des statistiques Fortnite">`:''}<div class="api-metric-grid">${statCard('Victoires',wins)}${statCard('Éliminations',kills)}${statCard('Ratio K/D',kd)}${statCard('Parties jouées',matches)}${statCard('Taux de victoire',winRate==='—'?'—':winRate+' %')}${battlePass.level!==undefined?statCard('Niveau du Passe',battlePass.level):''}${battlePass.progress!==undefined?statCard('Progression Passe',battlePass.progress+' %'):''}</div>
+        <h4 class="collection-section-title">Détail par mode</h4><div class="api-mode-grid">${modeCard('Solo',modes.solo)}${modeCard('Duo',modes.duo)}${modeCard('Section',modes.squad)}</div>
+        <p class="api-key-note">Dernières données fournies par Fortnite-API. Certaines statistiques peuvent être absentes selon le compte, la plateforme ou le mode.</p>`:'<div class="api-empty">Le profil a répondu, mais aucune statistique exploitable n’a été renvoyée pour cette période.</div>'}`;
+    }
+    async function loadCreatorCode(event) {
+      event.preventDefault(); const code=$('#creatorCode').value.trim(); const target=$('#creatorResults'); if(!code)return;
+      target.innerHTML='<div class="api-loading">Vérification du code créateur…</div>';
+      try {
+        const payload=await fetchFortnite('/v2/creatorcode?name='+encodeURIComponent(code)); const d=payload?.data||{};
+        target.innerHTML=`<div class="api-profile-head"><div class="api-profile-avatar" style="display:grid;place-items:center;color:#ffe600;font:30px var(--font-display)">FN</div><div><strong>${escapeHTML(d.code||d.name||code)}</strong><span>Résultat de Fortnite-API</span></div></div><div class="api-metric-grid">${statCard('Code',d.code||d.name||code)}${statCard('Compte',d.account?.name||d.accountName||'—')}${statCard('Statut',d.status||'Trouvé')}</div><div class="api-empty">${escapeHTML(d.description||'Informations retournées par l’API.')}</div>`;
+      } catch(error) { renderApiError('creatorResults',`Code introuvable ou API indisponible : ${error.message}`); }
+    }
+    function applyApiKey() {
+      const value=$('#apiKeyInput').value.trim();
+      if(!value) { toast('Colle une clé API valide.',true); return; }
+      apiKey=normalizeApiKey(value); $('#apiKeyInput').value=''; $('#apiKeyState').textContent='Clé de remplacement active pour cette session';
+      toast('Nouvelle clé API activée pour cette session.');
+    }
+    function clearApiKey() { apiKey=''; $('#apiKeyInput').value=''; $('#apiKeyState').textContent='Clé désactivée jusqu’au prochain rechargement'; $('#playerStatsResults')?.replaceChildren(); toast('Clé désactivée pour cette session.'); }
+
+    function renderAll() {
+      $$('.tab').forEach(button=>button.classList.toggle('active',button.dataset.tab===currentTab));
+      $('#activeHeading').textContent=currentHeading();
+      const isApi=currentTab==='api';
+      $('#apiHub').hidden=!isApi;
+      $('#filterPanel').hidden=isApi;
+      $('#collectionPanel').hidden=isApi || currentTab!=='collection';
+      $('#tabNotice').hidden=isApi || currentTab!=='weapons';
+      $('#resultCount').parentElement.hidden=isApi;
+      $('#itemGrid').hidden=isApi;
+      $('#pagination').hidden=isApi;
+      if(currentTab==='weapons') { $('#tabNotice').hidden=false; $('#tabNotice').textContent='À savoir : Fortnite-API fournit ici les cosmétiques, pas les statistiques des armes. Les armes affichées sont des exemples locaux ; ajoute tes propres armes et leurs statistiques pour compléter ton arsenal.'; }
+      if(isApi) renderApiHub();
+      else { renderFilters(); renderCollectionPanel(); renderGrid(); }
+      updateProgress();
+    }
+    function toggleOwned(id) {
+      if(stored.owned.includes(id)) stored.owned=stored.owned.filter(x=>x!==id); else stored.owned.push(id);
+      saveStore(); renderAll();
+    }
+    function toggleFavorite(id) {
+      if(stored.favorites.includes(id)) stored.favorites=stored.favorites.filter(x=>x!==id); else stored.favorites.push(id);
+      saveStore(); renderAll();
+      if(detailItemId===id) renderDetail(getItemById(id));
+    }
+    function getItemById(id) {
+      return [...cosmetics,...stored.customs,...weaponFallback].find(item=>item.id===id) || null;
+    }
+    function openModal(id) { const el=$('#'+id); el.classList.add('show'); document.body.style.overflow='hidden'; }
+    function closeModal(id) { const el=$('#'+id); if(el) el.classList.remove('show'); if (!$('.modal-backdrop.show')) document.body.style.overflow=''; }
+    function renderDetail(item) {
+      if(!item) return;
+      detailItemId=item.id;
+      const color=rarityColor(item.rarity);
+      const owned=stored.owned.includes(item.id);
+      const isWeapon=item.kind==='weapon';
+      const custom=item.isCustom===true;
+      const typeLabel=item.kind==='skin'?'Tenue':item.kind==='spirit'?'Esprit':item.kind==='companion'?'Compagnon':isWeapon?'Arme':item.subtype||'Équipement';
+      const stats=isWeapon?`<div class="detail-stat-grid"><div class="detail-stat"><b>${item.damage??'—'}</b><span>Dégâts</span></div><div class="detail-stat"><b>${item.fireRate??'—'}</b><span>Cadence (coups/min)</span></div><div class="detail-stat"><b>${item.magazine??'—'}</b><span>Chargeur</span></div><div class="detail-stat"><b>${item.reload??'—'} s</b><span>Rechargement</span></div></div>`:'';
+      const warning=item.isDemo?'<div class="notice">Ces statistiques sont des valeurs de démonstration et ne représentent pas des données officielles en jeu. Les stats des armes ne sont pas fournies par l’endpoint public de cosmétiques.</div>':'';
+      $('#detailBody').innerHTML=`<div class="detail-layout"><div class="detail-art" style="border-bottom:4px solid ${color}"><img src="${escapeHTML(item.image||placeholder(item.name,item.rarity))}" alt="${escapeHTML(item.name)}" onerror="this.onerror=null;this.src='${placeholder(item.name,item.rarity)}'" /></div><div class="detail-content"><div class="item-type">${escapeHTML(typeLabel)} ${custom?'<span class="custom-tag" style="position:static;display:inline-block;margin-left:5px">PERSO</span>':''}</div><h3>${escapeHTML(item.name)}</h3><div class="detail-pills"><span class="detail-pill" style="color:#111722;background:${color};border-color:${color}">${escapeHTML(item.rarity||'Sans rareté')}</span>${item.series?`<span class="detail-pill">${escapeHTML(item.series)}</span>`:''}<span class="detail-pill">${escapeHTML(item.subtype||typeLabel)}</span></div><p class="detail-description">${escapeHTML(item.description||'Aucune description disponible pour cet élément.')}</p>${warning}${stats}<div class="detail-actions">${!isWeapon?`<button class="btn ${owned?'btn-outline':'btn-primary'}" data-action="owned-detail" data-id="${escapeHTML(item.id)}">${owned?'✓ DÉJÀ POSSÉDÉ':'＋ MARQUER POSSÉDÉ'}</button>`:''}${isWeapon?`<button class="btn btn-outline" data-action="favorite-detail" data-id="${escapeHTML(item.id)}">${stored.favorites.includes(item.id)?'★ RETIRER DES FAVORIS':'☆ AJOUTER AUX FAVORIS'}</button>`:''}${custom?`<button class="btn btn-danger" data-action="delete-custom" data-id="${escapeHTML(item.id)}">SUPPRIMER</button>`:''}</div></div></div>`;
+      openModal('detailModal');
+    }
+    function openCreate() {
+      $('#createForm').reset(); pendingImageData=''; updateCreateFields(); openModal('createModal'); setTimeout(()=>$('#itemName').focus(),50);
+    }
+    function updateCreateFields() {
+      const category=$('#itemCategory').value;
+      $('#equipmentTypeField').hidden=category!=='equipment';
+      $('#weaponTypeField').hidden=category!=='weapon';
+      ['damageField','fireRateField','magazineField','reloadField'].forEach(id=>$('#'+id).hidden=category!=='weapon');
+    }
+    function saveCustom(event) {
+      event.preventDefault();
+      const form=$('#createForm');
+      const name=$('#itemName').value.trim();
+      const category=$('#itemCategory').value;
+      const imageUrl=$('#itemImageUrl').value.trim();
+      const image=imageUrl || pendingImageData;
+      if(!name) return toast('Ajoute un nom à ton élément.',true);
+      if(imageUrl && !/^https?:\/\//i.test(imageUrl)) return toast('L’URL de l’image doit commencer par http:// ou https://.',true);
+      const id='custom-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(16).slice(2));
+      const subtype=category==='equipment'?$('#equipmentType').value:category==='weapon'?$('#weaponType').value:category==='skin'?'Tenues':category==='spirit'?'Esprits':'Compagnons';
+      const item={id,name,kind:category,subtype,rarity:$('#itemRarity').value,series:$('#itemSeries').value.trim(),image:image||placeholder(name,$('#itemRarity').value),description:$('#itemDescription').value.trim(),isCustom:true,source:'custom'};
+      if(category==='weapon') {
+        item.damage=numberOrNull($('#weaponDamage').value); item.fireRate=numberOrNull($('#weaponFireRate').value); item.magazine=numberOrNull($('#weaponMagazine').value); item.reload=numberOrNull($('#weaponReload').value);
+      }
+      stored.customs.unshift(item); saveStore(); closeModal('createModal');
+      currentTab='creations'; currentFilter='Tous'; currentSearch=''; $('#globalSearch').value=''; currentPage=1; renderAll();
+      toast('Élément ajouté à Mes créations.');
+    }
+    function numberOrNull(value) { return value===''?null:Number(value); }
+    function deleteCustom(id) {
+      const item=stored.customs.find(x=>x.id===id); if(!item) return;
+      if(!confirm(`Supprimer « ${item.name} » de tes créations ?`)) return;
+      stored.customs=stored.customs.filter(x=>x.id!==id); stored.owned=stored.owned.filter(x=>x!==id); stored.favorites=stored.favorites.filter(x=>x!==id);
+      saveStore(); closeModal('detailModal'); renderAll(); toast('Création supprimée.');
+    }
+    function exportJSON() {
+      const payload={app:'Fortnite Collection Hub',version:1,exportedAt:new Date().toISOString(),owned:stored.owned,favorites:stored.favorites,customs:stored.customs};
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob); const link=document.createElement('a'); link.href=url; link.download='fortnite-collection-backup.json'; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url); toast('Sauvegarde JSON exportée.');
+    }
+    function importJSONFile(file) {
+      if(!file) return;
+      const reader=new FileReader();
+      reader.onload=() => {
+        try {
+          const data=JSON.parse(reader.result);
+          if(!data || !Array.isArray(data.owned) || !Array.isArray(data.customs)) throw new Error('Fichier non reconnu');
+          const customs=data.customs.filter(item=>item && typeof item.id==='string' && typeof item.name==='string' && ['skin','spirit','companion','equipment','weapon'].includes(item.kind));
+          stored={owned:[...new Set(data.owned.filter(x=>typeof x==='string'))],favorites:Array.isArray(data.favorites)?[...new Set(data.favorites.filter(x=>typeof x==='string'))]:[],customs};
+          saveStore(); currentTab='creations'; currentFilter='Tous'; currentPage=1; renderAll(); toast(`${customs.length} création(s) importée(s).`);
+        } catch(error) { toast('Import impossible : fichier JSON invalide ou incompatible.',true); }
+        $('#importFile').value='';
+      };
+      reader.onerror=()=>toast('Impossible de lire ce fichier.',true); reader.readAsText(file);
+    }
+
+    // Événements délégués pour que les boutons restent actifs après chaque rendu.
+    $('#mainTabs').addEventListener('click', event=>{
+      const button=event.target.closest('[data-tab]'); if(!button) return;
+      currentTab=button.dataset.tab; currentFilter='Tous'; currentPage=1; renderAll();
+    });
+    $('#filterPanel').addEventListener('click',event=>{
+      const button=event.target.closest('[data-filter]'); if(!button) return;
+      currentFilter=button.dataset.filter; currentPage=1; renderAll();
+    });
+    $('#itemGrid').addEventListener('click',event=>{
+      const action=event.target.closest('[data-action]');
+      if(action) {
+        event.stopPropagation(); const id=action.dataset.id;
+        if(action.dataset.action==='owned') { toggleOwned(id); return; }
+        if(action.dataset.action==='favorite') { toggleFavorite(id); return; }
+      }
+      const create=event.target.closest('[data-empty-create]'); if(create) { openCreate(); return; }
+      const card=event.target.closest('[data-open-item]'); if(card) renderDetail(getItemById(card.dataset.openItem));
+    });
+    $('#pagination').addEventListener('click',event=>{
+      const button=event.target.closest('[data-page]'); if(!button||button.disabled) return;
+      const page=Number(button.dataset.page); if(page>0) {currentPage=page;renderGrid();window.scrollTo({top:$('#filterPanel').getBoundingClientRect().top+window.scrollY-145,behavior:'smooth'});}
+    });
+    $('#detailBody').addEventListener('click',event=>{
+      const button=event.target.closest('[data-action]'); if(!button) return;
+      const id=button.dataset.id;
+      if(button.dataset.action==='owned-detail') {toggleOwned(id); renderDetail(getItemById(id));}
+      if(button.dataset.action==='favorite-detail') {toggleFavorite(id); renderDetail(getItemById(id));}
+      if(button.dataset.action==='delete-custom') deleteCustom(id);
+    });
+    $('#globalSearch').addEventListener('input',event=>{currentSearch=event.target.value;const collectionSearch=$('#collectionSearch');if(collectionSearch)collectionSearch.value=currentSearch;currentPage=1;renderGrid();});
+    $('#collectionPanel').addEventListener('input',event=>{
+      if(event.target.id==='collectionSearch') {currentSearch=event.target.value;$('#globalSearch').value=currentSearch;currentPage=1;renderGrid();}
+    });
+    $('#collectionPanel').addEventListener('change',event=>{
+      if(event.target.id==='collectionTypeFilter') collectionTypeFilter=event.target.value;
+      if(event.target.id==='collectionRarityFilter') collectionRarityFilter=event.target.value;
+      currentPage=1;renderAll();
+    });
+    $('#openCreate').addEventListener('click',openCreate);
+    $('#createForm').addEventListener('submit',saveCustom);
+    $('#itemCategory').addEventListener('change',updateCreateFields);
+    $('#exportBtn').addEventListener('click',exportJSON);
+    $('#importBtn').addEventListener('click',()=>$('#importFile').click());
+    $('#importFile').addEventListener('change',event=>importJSONFile(event.target.files[0]));
+    $('#itemImageFile').addEventListener('change',event=>{
+      const file=event.target.files[0]; pendingImageData='';
+      if(!file) return;
+      if(!file.type.startsWith('image/')) {event.target.value='';return toast('Choisis un fichier image.',true);}
+      if(file.size>5*1024*1024) {event.target.value='';return toast('Image trop volumineuse : maximum 5 Mo.',true);}
+      const reader=new FileReader(); reader.onload=()=>{pendingImageData=String(reader.result);$('#itemImageUrl').value='';toast('Image locale prête à être ajoutée.');}; reader.onerror=()=>toast('Lecture de l’image impossible.',true); reader.readAsDataURL(file);
+    });
+    document.addEventListener('click',event=>{
+      const close=event.target.closest('[data-close]'); if(close) closeModal(close.dataset.close);
+      if(event.target.classList.contains('modal-backdrop')) closeModal(event.target.id);
+    });
+    document.addEventListener('keydown',event=>{if(event.key==='Escape') $$('.modal-backdrop.show').forEach(modal=>closeModal(modal.id));});
+
+    // Réglages d'apparence et thèmes visuels
+    $('#openDesign').addEventListener('click',()=>{syncDesignControls();openModal('designModal');});
+    $('#themeGrid').addEventListener('click',event=>{const button=event.target.closest('[data-theme-preset]');if(button)chooseDesignPreset(button.dataset.themePreset);});
+    ['designAccent','designBackground','designSecondary','designFont','designDensity','designAtmosphere'].forEach(id=>{const el=$('#'+id);el.addEventListener('input',saveDesignFromControls);el.addEventListener('change',saveDesignFromControls);});
+    $('#resetDesign').addEventListener('click',resetDesign);
+
+    $('#apiNav').addEventListener('click',event=>{
+      const button=event.target.closest('[data-api-view]'); if(!button)return;
+      apiView=button.dataset.apiView; renderApiHub();
+    });
+    $('#apiKeyApply').addEventListener('click',applyApiKey);
+    $('#apiKeyClear').addEventListener('click',clearApiKey);
+    $('#apiHub').addEventListener('submit',event=>{
+      if(event.target.id==='playerStatsForm') loadPlayerStats(event);
+      if(event.target.id==='creatorForm') loadCreatorCode(event);
+    });
+    $('#apiHub').addEventListener('keydown',event=>{
+      if(event.key==='Enter' && event.target.id==='apiKeyInput') { event.preventDefault(); applyApiKey(); }
+    });
+    $('#apiHub').addEventListener('change',event=>{
+      if(event.target.id==='playerLookup') $('#playerPlatformField').hidden=event.target.value==='id';
+    });
+
+    applyDesign(false);
+    $('#apiKeyState').textContent = apiKey ? 'Clé locale intégrée · active' : 'Aucune clé active';
+    renderAll();
+    updateCreateFields();
+    loadApiCatalog();
+  })();
+  </script>
+</body>
+</html>
